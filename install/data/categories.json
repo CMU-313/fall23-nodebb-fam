@@ -18,15 +18,6 @@
         "order": 2
     },
     {
-        "name": "Blogs",
-        "description": "Blog posts from individual members",
-        "descriptionParsed": "<p>Blog posts from individual members</p>\n",
-        "bgColor": "#86ba4b",
-        "color": "#ffffff",
-        "icon" : "fa-newspaper-o",
-        "order": 4
-    },
-    {
         "name": "Comments & Feedback",
         "description": "Got a question? Ask away!",
         "descriptionParsed": "<p>Got a question? Ask away!</p>\n",
@@ -36,12 +27,21 @@
         "order": 3
     },
     {
-        "name": "Classes",
-        "description": "View Your Classes",
-        "descriptionParsed": "<p>View Your Classes</p>\n",
-        "bgColor": "#e95c5a",
+        "name": "Blogs",
+        "description": "Blog posts from individual members",
+        "descriptionParsed": "<p>Blog posts from individual members</p>\n",
+        "bgColor": "#86ba4b",
         "color": "#ffffff",
-        "icon" : "fa-class",
+        "icon" : "fa-newspaper-o",
+        "order": 4
+    },
+    {
+        "name": "Classes",
+        "description": "Got a class? Join here!",
+        "descriptionParsed": "<p>Got a class? Join here!</p>\n",
+        "bgColor": "#800080",
+        "color": "#ffffff",
+        "icon" : "fa-briefcase",
         "order": 5
     }
 ]
