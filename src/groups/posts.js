@@ -42,19 +42,28 @@ module.exports = function (Groups) {
     Groups.getLatestMemberPosts = async function (groupName, max, uid) {
         let pids = await db.getSortedSetRevRange(`group:${groupName}:member:pids`, 0, max - 1);
         pids = await privileges.posts.filter('topics:read', pids, uid);
-        // Filter posts by title containing the groupName
-        const filteredPids = await filterPostsByTitle(pids, groupName);
+        const groupNames = await getGroupNames(); 
+        const filteredPids = await filterPostsByTitle(pids, groupName, groupNames);
         return await posts.getPostSummaryByPids(filteredPids, uid, { stripTags: false });
     };
 
-    async function filterPostsByTitle(pids, groupName) {
+    async function filterPostsByTitle(pids, groupName, groupNameData) {
         const postsData = await posts.getPostsFields(pids, ['tid']);
         const filteredPids = [];
-
         const tids = _.uniq(postsData.map(post => post.tid));
         const [topics] = await Promise.all([
             getTopics(tids),
         ]);
+
+        const groupNames = groupNameData.map(entry => {
+            const parts = entry.split(':');
+            if (parts.length > 0) {
+                return parts[0].toLowerCase();
+            } else {
+                return ''; 
+            }
+        });
+                
         const tidToTopic = _.zipObject(tids, topics);
         postsData.forEach((post, idx) => {
             const tid = post.tid || 0;
@@ -62,7 +71,20 @@ module.exports = function (Groups) {
             const postTitle = topic ? topic.title : '';
             if (postTitle.toLowerCase().includes(groupName.toLowerCase())) {
                 filteredPids.push(pids[idx]);
+            } else if (groupName.toLowerCase() === 'miscellaneous') {
+                let misc = true; 
+                for (const group of groupNames) {
+                    if (postTitle.toLowerCase().includes(group)) {
+                        misc = false; 
+                        break; 
+                    }
+                }
+                if (misc) {
+                    filteredPids.push(pids[idx]);
+                }
             }
+            
+
         });
         return filteredPids;
     }
@@ -76,5 +98,17 @@ module.exports = function (Groups) {
         });
 
         return topicsData;
+    }
+
+    async function getGroupNames() {
+        return new Promise((resolve, reject) => {
+            Groups.getGroups('groups:visible:name', 0, -1, (err, groupNames) => {
+                if (err) {
+                    reject(err);
+                } else {
+                    resolve(groupNames);
+                }
+            });
+        });
     }
 };
