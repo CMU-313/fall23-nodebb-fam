@@ -74,7 +74,7 @@ module.exports = function (Groups) {
                 topic.tags = topic.tags.map(tag => tag.value);
             }
         });
-    
+
         return topicsData;
     }
 };
