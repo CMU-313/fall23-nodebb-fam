@@ -6,7 +6,7 @@ const db = require('../database');
 const groups = require('.');
 const privileges = require('../privileges');
 const posts = require('../posts');
-const topics = require('../posts');
+const topics = require('../topics');
 
 module.exports = function (Groups) {
     Groups.onNewPostMade = async function (postData) {
