@@ -1,9 +1,12 @@
 'use strict';
 
+const _ = require('lodash');
+
 const db = require('../database');
 const groups = require('.');
 const privileges = require('../privileges');
 const posts = require('../posts');
+const topics = require('../posts');
 
 module.exports = function (Groups) {
     Groups.onNewPostMade = async function (postData) {
@@ -39,6 +42,39 @@ module.exports = function (Groups) {
     Groups.getLatestMemberPosts = async function (groupName, max, uid) {
         let pids = await db.getSortedSetRevRange(`group:${groupName}:member:pids`, 0, max - 1);
         pids = await privileges.posts.filter('topics:read', pids, uid);
-        return await posts.getPostSummaryByPids(pids, uid, { stripTags: false });
+        // Filter posts by title containing the groupName
+        const filteredPids = await filterPostsByTitle(pids, groupName);
+        return await posts.getPostSummaryByPids(filteredPids, uid, { stripTags: false });
     };
+
+    async function filterPostsByTitle(pids, groupName) {
+        const postsData = await posts.getPostsFields(pids, ['tid']);
+        const filteredPids = [];
+
+        const tids = _.uniq(postsData.map(post => post.tid));
+        const [topics] = await Promise.all([
+            getTopics(tids),
+        ]);
+        const tidToTopic = _.zipObject(tids, topics);
+        postsData.forEach((post, idx) => {
+            const tid = post.tid || 0;
+            const topic = tidToTopic[tid];
+            const postTitle = topic ? topic.title : '';
+            if (postTitle.toLowerCase().includes(groupName.toLowerCase())) {
+                filteredPids.push(pids[idx]);
+            }
+        });
+        return filteredPids;
+    }
+
+    async function getTopics(tids) {
+        const topicsData = await topics.getTopicsData(tids);
+        topicsData.forEach((topic) => {
+            if (topic && topic.tags) {
+                topic.tags = topic.tags.map(tag => tag.value);
+            }
+        });
+    
+        return topicsData;
+    }
 };
