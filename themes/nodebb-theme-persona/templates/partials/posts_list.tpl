@@ -1,6 +1,5 @@
 <ul component="posts" class="posts-list" data-nextstart="{nextStart}">
     {{{each posts}}}
-    [[groups:details.group_name]]
     <!-- IMPORT partials/posts_list_item.tpl -->
     {{{end}}}
 </ul>
