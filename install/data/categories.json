@@ -3,18 +3,9 @@
         "name": "Announcements",
         "description": "Announcements regarding our community",
         "descriptionParsed": "<p>Announcements regarding our community</p>\n",
-        "bgColor": "#fda34b",
-        "color": "#ffffff",
-        "icon" : "fa-bullhorn",
-        "order": 1
-    },
-    {
-        "name": "General Discussion",
-        "description": "A place to talk about whatever you want",
-        "descriptionParsed": "<p>A place to talk about whatever you want</p>\n",
         "bgColor": "#59b3d0",
         "color": "#ffffff",
-        "icon" : "fa-comments-o",
+        "icon" : "fa-bullhorn",
         "order": 2
     },
     {
@@ -24,24 +15,34 @@
         "bgColor": "#e95c5a",
         "color": "#ffffff",
         "icon" : "fa-question",
+        "order": 5
+    },
+
+    {
+        "name": "Homework",
+        "description": "Homework discussion and due dates",
+        "descriptionParsed": "<p>DHomework discussion and due dates</p>\n",
+        "bgColor": "#86ba4b",
+        "color": "#ffffff",
+        "icon" : "fa-book",
         "order": 3
     },
     {
-        "name": "Blogs",
-        "description": "Blog posts from individual members",
-        "descriptionParsed": "<p>Blog posts from individual members</p>\n",
-        "bgColor": "#86ba4b",
+        "name": "Exams",
+        "description": "Exam discussion and times",
+        "descriptionParsed": "<p>Exam discussion and timest</p>\n",
+        "bgColor": "#fda34b",
         "color": "#ffffff",
-        "icon" : "fa-newspaper-o",
+        "icon" : "fa-pencil-square-o",
         "order": 4
     },
     {
         "name": "Classes",
-        "description": "Got a class? Join here!",
+        "description": "List of all your classes and information",
         "descriptionParsed": "<p>Got a class? Join here!</p>\n",
         "bgColor": "#800080",
         "color": "#ffffff",
         "icon" : "fa-briefcase",
-        "order": 5
+        "order": 1
     }
 ]
