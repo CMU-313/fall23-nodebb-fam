@@ -21,7 +21,7 @@
     {
         "name": "Homework",
         "description": "Homework discussion and due dates",
-        "descriptionParsed": "<p>DHomework discussion and due dates</p>\n",
+        "descriptionParsed": "<p>Homework discussion and due dates</p>\n",
         "bgColor": "#86ba4b",
         "color": "#ffffff",
         "icon" : "fa-book",
