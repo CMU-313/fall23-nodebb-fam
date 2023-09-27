@@ -116,12 +116,16 @@ module.exports = function (Groups) {
         return topicsData;
     }
 
+    // Type signature: () => Promise<string[]>
     async function getGroupNames() {
         return new Promise((resolve, reject) => {
             Groups.getGroups('groups:visible:name', 0, -1, (err, groupNames) => {
                 if (err) {
                     reject(err);
                 } else {
+                    // Ensure that groupNames is an array of strings
+                    assert(Array.isArray(groupNames), 'groupNames must be an array');
+                    assert(groupNames.every(name => typeof name === 'string'), 'Each group name must be a string');
                     resolve(groupNames);
                 }
             });
