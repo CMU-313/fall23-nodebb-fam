@@ -934,7 +934,7 @@ describe('Controllers', () => {
                 assert.ifError(err);
                 topics.post({
                     uid: fooUid,
-                    title: 'topic title',
+                    title: 'this is a group-details post',
                     content: 'test topic content',
                     cid: cid,
                 }, (err) => {
