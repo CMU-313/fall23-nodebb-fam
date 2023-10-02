@@ -10,6 +10,8 @@ const _ = require('lodash');
 
 const utils = require('./utils');
 
+const createMiscellaneousGroup = require('./miscellaneous').default;
+
 const install = module.exports;
 const questions = {};
 
@@ -418,24 +420,6 @@ async function createGlobalModeratorsGroup() {
         });
     }
     await groups.show('Global Moderators');
-}
-
-async function createMiscellaneousGroup() {
-    const groups = require('./groups');
-    const exists = await groups.exists('Miscellaneous');
-    if (exists) {
-        winston.info('Miscellaneous group found, skipping creation!');
-    } else {
-        await groups.create({
-            name: 'Miscellaneous',
-            userTitle: 'Miscellaneous',
-            description: 'For Unmatched Posts',
-            hidden: 0,
-            private: 0,
-            disableJoinRequests: 1,
-        });
-    }
-    await groups.show('Miscellaneous');
 }
 
 async function giveGlobalPrivileges() {
