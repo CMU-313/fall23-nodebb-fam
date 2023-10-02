@@ -10,7 +10,7 @@ const _ = require('lodash');
 
 const utils = require('./utils');
 
-const createMiscellaneousGroup = require('./miscellaneous').default;
+const createMiscellaneousGroup = require('./miscellaneous');
 
 const install = module.exports;
 const questions = {};
