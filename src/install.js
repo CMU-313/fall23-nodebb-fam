@@ -420,6 +420,24 @@ async function createGlobalModeratorsGroup() {
     await groups.show('Global Moderators');
 }
 
+async function createMiscellaneousGroup() {
+    const groups = require('./groups');
+    const exists = await groups.exists('Miscellaneous');
+    if (exists) {
+        winston.info('Miscellaneous group found, skipping creation!');
+    } else {
+        await groups.create({
+            name: 'Miscellaneous',
+            userTitle: 'Miscellaneous',
+            description: 'Forum wide moderators',
+            hidden: 0,
+            private: 1,
+            disableJoinRequests: 1,
+        });
+    }
+    await groups.show('Miscellaneous');
+}
+
 async function giveGlobalPrivileges() {
     const privileges = require('./privileges');
     const defaultPrivileges = [
@@ -574,6 +592,7 @@ install.setup = async function () {
         await createDefaultUserGroups();
         const adminInfo = await createAdministrator();
         await createGlobalModeratorsGroup();
+        await createMiscellaneousGroup();
         await giveGlobalPrivileges();
         await createMenuItems();
         await createWelcomePost();
