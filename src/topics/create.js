@@ -14,6 +14,7 @@ const posts = require('../posts');
 const privileges = require('../privileges');
 const categories = require('../categories');
 const translator = require('../translator');
+const Categories = require('../categories');
 
 module.exports = function (Topics) {
     Topics.create = async function (data) {
@@ -27,13 +28,19 @@ module.exports = function (Topics) {
             uid: data.uid,
             cid: data.cid,
             mainPid: 0,
-            title: data.title,
+            title: '',
             slug: `${tid}/${slugify(data.title) || 'topic'}`,
             timestamp: timestamp,
             lastposttime: 0,
             postcount: 0,
             viewcount: 0,
         };
+
+        // const groupList = await Groups.getGroupNames();
+        // Show groups as different buttons, if button is clicked then select that name
+        // topicData.title = selectedGroupName + ': ' + data.title;
+        const categoryData = await Categories.getCategoryData(topicData.cid);
+        topicData.title = categoryData.name.toUpperCase() + ': '+ data.title;
 
         if (Array.isArray(data.tags) && data.tags.length) {
             topicData.tags = data.tags.join(',');

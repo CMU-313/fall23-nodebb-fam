@@ -22,7 +22,6 @@ const upload_url = nconf.get('upload_url');
 
 topicsController.get = async function getTopic(req, res, next) {
     const tid = req.params.topic_id;
-
     if (
         (req.params.post_index && !utils.isNumber(req.params.post_index) && req.params.post_index !== 'unread') ||
         !utils.isNumber(tid)
