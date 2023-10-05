@@ -36,9 +36,6 @@ module.exports = function (Topics) {
             viewcount: 0,
         };
 
-        // const groupList = await Groups.getGroupNames();
-        // Show groups as different buttons, if button is clicked then select that name
-        // topicData.title = selectedGroupName + ': ' + data.title;
         const categoryData = await Categories.getCategoryData(topicData.cid);
         topicData.title = categoryData.name.toUpperCase() + ': '+ data.title;
 
