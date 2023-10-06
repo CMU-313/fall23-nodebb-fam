@@ -1,4 +1,5 @@
-{{{ if ("Comments & Feedback" == ../category.name) }}}
+{../category.name}
+{{{ if ("Feedback" == ../category.name) }}}
 <li component="post" class="posts-list-item row<!-- IF ../deleted --> deleted<!-- ELSE --><!-- IF ../topic.deleted --> deleted<!-- ENDIF --><!-- ENDIF -->{{{ if ../topic.scheduled }}} scheduled{{{ end }}}" data-pid="{../pid}" data-uid="{../uid}">
 
     <div class="col-lg-11 col-sm-10 col-xs-9 post-body">
