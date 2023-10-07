@@ -14,6 +14,7 @@ const posts = require('../posts');
 const privileges = require('../privileges');
 const categories = require('../categories');
 const translator = require('../translator');
+const Categories = require('../categories');
 
 module.exports = function (Topics) {
     Topics.create = async function (data) {
@@ -27,7 +28,7 @@ module.exports = function (Topics) {
             uid: data.uid,
             cid: data.cid,
             mainPid: 0,
-            title: data.title,
+            title: '',
             slug: `${tid}/${slugify(data.title) || 'topic'}`,
             timestamp: timestamp,
             lastposttime: 0,
@@ -35,6 +36,10 @@ module.exports = function (Topics) {
             viewcount: 0,
         };
 
+        const formattedTimestamp = new Date(topicData.timestamp).toLocaleString();
+        topicData.title = data.title + ' (' + formattedTimestamp + ')';
+        
+        
         if (Array.isArray(data.tags) && data.tags.length) {
             topicData.tags = data.tags.join(',');
         }
