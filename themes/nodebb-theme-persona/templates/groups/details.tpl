@@ -255,18 +255,91 @@
             {{widgets.left.html}}
             {{{end}}}
         </div>
-    </div>
+    </div>  
     <div class="col-lg-8 col-xs-12">
-        <div class="col-lg-11">
-            <!-- IF !posts.length -->
-            <div class="alert alert-info">[[groups:details.has_no_posts]]</div>
-            <!-- ENDIF !posts.length -->
-            <!-- IMPORT partials/posts_list.tpl -->
+        <div class="panel panel-default">
+            <div class="panel-heading pointer" data-toggle="collapse" data-target=".announcements">
+                <h3 class="panel-title">
+                    <i class="fa fa-caret-down pull-right"></i>
+                    <i class="fa fa-bullhorn"></i> Announcements
+                </h3>
+            </div>
+            <div class="panel-body announcements collapse">
+                <div class="col-lg-11">
+                    <!-- IF !posts.length -->
+                    <div class="alert alert-info">[[groups:details.has_no_posts]]</div>
+                    <!-- ENDIF !posts.length -->
+                    <!-- IMPORT partials/posts_list1.tpl -->
+                </div>
+                <div data-widget-area="right">
+                    {{{each widgets.right}}}
+                    {{widgets.right.html}}
+                    {{{end}}}
+                </div>
+            </div>
         </div>
-        <div data-widget-area="right">
-            {{{each widgets.right}}}
-            {{widgets.right.html}}
-            {{{end}}}
+        <div class="panel panel-default">
+            <div class="panel-heading pointer" data-toggle="collapse" data-target=".homework">
+                <h3 class="panel-title">
+                    <i class="fa fa-caret-down pull-right"></i>
+                    <i class="fa fa-book"></i> Homework
+                </h3>
+            </div>
+            <div class="panel-body homework collapse">
+                <div class="col-lg-11">
+                    <!-- IF !posts.length -->
+                    <div class="alert alert-info">[[groups:details.has_no_posts]]</div>
+                    <!-- ENDIF !posts.length -->
+                    <!-- IMPORT partials/posts_list2.tpl -->
+                </div>
+                <div data-widget-area="right">
+                    {{{each widgets.right}}}
+                    {{widgets.right.html}}
+                    {{{end}}}
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading pointer" data-toggle="collapse" data-target=".exams">
+                <h3 class="panel-title">
+                    <i class="fa fa-caret-down pull-right"></i>
+                    <i class="fa fa-pencil-square-o"></i> Exams
+                </h3>
+            </div>
+            <div class="panel-body exams collapse">
+                <div class="col-lg-11">
+                    <!-- IF !posts.length -->
+                    <div class="alert alert-info">[[groups:details.has_no_posts]]</div>
+                    <!-- ENDIF !posts.length -->
+                    <!-- IMPORT partials/posts_list3.tpl -->
+                </div>
+                <div data-widget-area="right">
+                    {{{each widgets.right}}}
+                    {{widgets.right.html}}
+                    {{{end}}}
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading pointer" data-toggle="collapse" data-target=".comments">
+                <h3 class="panel-title">
+                    <i class="fa fa-caret-down pull-right"></i>
+                    <i class="fa fa-question"></i> Comments and Feedback
+                </h3>
+            </div>
+            <div class="panel-body comments collapse">
+                <div class="col-lg-11">
+                    <!-- IF !posts.length -->
+                    <div class="alert alert-info">[[groups:details.has_no_posts]]</div>
+                    <!-- ENDIF !posts.length -->
+                    <!-- IMPORT partials/posts_list4.tpl -->
+                </div>
+                <div data-widget-area="right">
+                    {{{each widgets.right}}}
+                    {{widgets.right.html}}
+                    {{{end}}}
+                </div>
+            </div>
         </div>
     </div>
 </div>
