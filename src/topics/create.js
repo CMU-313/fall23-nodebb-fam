@@ -36,9 +36,10 @@ module.exports = function (Topics) {
             viewcount: 0,
         };
 
-        const categoryData = await Categories.getCategoryData(topicData.cid);
-        topicData.title = categoryData.name.toUpperCase() + ': '+ data.title;
-
+        const formattedTimestamp = new Date(topicData.timestamp).toLocaleString();
+        topicData.title = data.title + ' (' + formattedTimestamp + ')';
+        
+        
         if (Array.isArray(data.tags) && data.tags.length) {
             topicData.tags = data.tags.join(',');
         }
