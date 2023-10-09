@@ -84,8 +84,8 @@ module.exports = function (Topics) {
     };
 
     async function getTids(params) {
-        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 };
-        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [] };
+        const counts = { '': 0, new: 0, watched: 0, unreplied: 0 , unresolved: 0};
+        const tidsByFilter = { '': [], new: [], watched: [], unreplied: [], unresolved: []};
 
         if (params.uid <= 0) {
             return { counts: counts, tids: [], tidsByFilter: tidsByFilter };
@@ -158,6 +158,7 @@ module.exports = function (Topics) {
 
                 if (topic.postcount <= 1) {
                     tidsByFilter.unreplied.push(topic.tid);
+                    tidsByFilter.unresolved.push(topic.tid);
                 }
 
                 if (!userReadTimes[topic.tid]) {
@@ -169,6 +170,7 @@ module.exports = function (Topics) {
         counts[''] = tidsByFilter[''].length;
         counts.watched = tidsByFilter.watched.length;
         counts.unreplied = tidsByFilter.unreplied.length;
+        counts.unresolved = tidsByFilter.unresolved.length;
         counts.new = tidsByFilter.new.length;
 
         return {
@@ -258,6 +260,7 @@ module.exports = function (Topics) {
             unreadNewTopicCount: results.new,
             unreadWatchedTopicCount: results.watched,
             unreadUnrepliedTopicCount: results.unreplied,
+            unreadUnresolvedTopicCount: results.unresolved,
         });
     };
 
@@ -383,6 +386,11 @@ module.exports = function (Topics) {
     };
 
     Topics.filterUnrepliedTids = async function (tids) {
+        const scores = await db.sortedSetScores('topics:posts', tids);
+        return tids.filter((tid, index) => tid && scores[index] !== null && scores[index] <= 1);
+    };
+
+    Topics.filterUnresolvedTids = async function (tids) {
         const scores = await db.sortedSetScores('topics:posts', tids);
         return tids.filter((tid, index) => tid && scores[index] !== null && scores[index] <= 1);
     };
