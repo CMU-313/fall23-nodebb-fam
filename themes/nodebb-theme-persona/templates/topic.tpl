@@ -15,9 +15,8 @@
                         <i class="fa fa-arrow-circle-right <!-- IF !oldCid -->hidden<!-- ENDIF !oldCid -->" title="{{{ if privileges.isAdminOrMod }}}[[topic:moved-from, {oldCategory.name}]]{{{ else }}}[[topic:moved]]{{{ end }}}"></i>
                         <span class="unanswered">
                             <i class="fa fa-question-circle">
-                                <::before></::before>
                             </i> 
-                            Unsolved
+                            Unresolved
                         </span>
                         {{{each icons}}}{@value}{{{end}}}
                     </span>
