@@ -30,6 +30,7 @@ module.exports = function (Messaging) {
         uids.forEach((uid) => {
             data.self = parseInt(uid, 10) === parseInt(fromUid, 10) ? 1 : 0;
             Messaging.pushUnreadCount(uid);
+            Messaging.pushUnresolvedCount(uid);
             sockets.in(`uid_${uid}`).emit('event:chats.receive', data);
         });
         if (messageObj.system) {

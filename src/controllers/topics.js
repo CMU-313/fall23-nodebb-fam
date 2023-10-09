@@ -170,6 +170,17 @@ async function markAsRead(req, tid) {
     }
 }
 
+async function markAsResolved(req, tid) {
+    if (req.loggedIn) {
+        const markedResolved = await topics.markAsResolved([tid], req.uid);
+        const promises = [topics.markTopicNotificationsResolved([tid], req.uid)];
+        if (markedResolved) {
+            promises.push(topics.pushUnresolvedCount(req.uid));
+        }
+        await Promise.all(promises);
+    }
+}
+
 async function buildBreadcrumbs(topicData) {
     const breadcrumbs = [
         {

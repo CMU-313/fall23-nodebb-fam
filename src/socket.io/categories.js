@@ -139,7 +139,7 @@ async function ignoreOrWatch(fn, socket, data) {
     } while (cat);
 
     await fn(targetUid, cids);
-    await topics.pushUnreadCount(targetUid);
+    await topics.pushUnresolvedCount(targetUid);
     return cids;
 }
 

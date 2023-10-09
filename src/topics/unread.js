@@ -99,6 +99,8 @@ module.exports = function (Topics) {
             getCategoryTids(params),
             db.getSortedSetRevRangeByScoreWithScores(`uid:${params.uid}:tids_read`, 0, -1, '+inf', params.cutoff),
             db.getSortedSetRevRangeWithScores(`uid:${params.uid}:tids_unread`, 0, -1),
+            db.getSortedSetRevRangeByScoreWithScores(`uid:${params.uid}:tids_resolved`, 0, -1, '+inf', params.cutoff),
+            db.getSortedSetRevRangeWithScores(`uid:${params.uid}:tids_unresolved`, 0, -1),
         ]);
 
         const userReadTimes = _.mapValues(_.keyBy(userScores, 'value'), 'score');
@@ -268,6 +270,10 @@ module.exports = function (Topics) {
         await Topics.markCategoryUnreadForAll(tid);
     };
 
+    Topics.markAsUnresolvedForAll = async function (tid) {
+        await Topics.markCategoryUnresolvedForAll(tid);
+    };
+
     Topics.markAsRead = async function (tids, uid) {
         if (!Array.isArray(tids) || !tids.length) {
             return false;
@@ -328,6 +334,11 @@ module.exports = function (Topics) {
         await categories.markAsUnreadForAll(cid);
     };
 
+    Topics.markCategoryUnresolvedForAll = async function (tid) {
+        const cid = await Topics.getTopicField(tid, 'cid');
+        await categories.markAsUnresolvedForAll(cid);
+    };
+
     Topics.hasReadTopics = async function (tids, uid) {
         if (!(parseInt(uid, 10) > 0)) {
             return tids.map(() => false);
@@ -375,6 +386,15 @@ module.exports = function (Topics) {
         }
         await db.sortedSetRemove(`uid:${uid}:tids_read`, tid);
         await db.sortedSetAdd(`uid:${uid}:tids_unread`, Date.now(), tid);
+    };
+
+    Topics.markUnresolved = async function (tid, uid) {
+        const exists = await Topics.exists(tid);
+        if (!exists) {
+            throw new Error('[[error:no-topic]]');
+        }
+        await db.sortedSetRemove(`uid:${uid}:tids_resolved`, tid);
+        await db.sortedSetAdd(`uid:${uid}:tids_unresolved`, Date.now(), tid);
     };
 
     Topics.filterNewTids = async function (tids, uid) {

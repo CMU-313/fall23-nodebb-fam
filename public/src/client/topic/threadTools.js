@@ -86,6 +86,44 @@ define('forum/topic/threadTools', [
             return false;
         });
 
+        topicContainer.on('click', '[component="topic/mark-unresolved"]', function () {
+            socket.emit('topics.Unresolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+
+                if (app.previousUrl && !app.previousUrl.match('^/topic')) {
+                    ajaxify.go(app.previousUrl, function () {
+                        handleBack.onBackClicked(true);
+                    });
+                } else if (ajaxify.data.category) {
+                    ajaxify.go('category/' + ajaxify.data.category.slug, handleBack.onBackClicked);
+                }
+
+                alerts.success('[[topic:mark_unresolved.success]]');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-resolved"]', function () {
+            socket.emit('topics.markResolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+
+                if (app.previousUrl && !app.previousUrl.match('^/topic')) {
+                    ajaxify.go(app.previousUrl, function () {
+                        handleBack.onBackClicked(true);
+                    });
+                } else if (ajaxify.data.category) {
+                    ajaxify.go('category/' + ajaxify.data.category.slug, handleBack.onBackClicked);
+                }
+
+                alerts.success('[[topic:mark_resolved.success]]');
+            });
+            return false;
+        });
+
         topicContainer.on('click', '[component="topic/mark-unread-for-all"]', function () {
             const btn = $(this);
             socket.emit('topics.markAsUnreadForAll', [tid], function (err) {
@@ -93,6 +131,18 @@ define('forum/topic/threadTools', [
                     return alerts.error(err);
                 }
                 alerts.success('[[topic:markAsUnreadForAll.success]]');
+                btn.parents('.thread-tools.open').find('.dropdown-toggle').trigger('click');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-unresolved-for-all"]', function () {
+            const btn = $(this);
+            socket.emit('topics.markAsUnresolvedForAll', [tid], function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                alerts.success('[[topic:markAsUnresolvedForAll.success]]');
                 btn.parents('.thread-tools.open').find('.dropdown-toggle').trigger('click');
             });
             return false;

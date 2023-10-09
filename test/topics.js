@@ -984,6 +984,7 @@ describe('Topic\'s', () => {
                 },
                 function (done) {
                     topics.markUnread(newTid, uid, done);
+                    topics.markUnresolved(newTid, uid, done);
                 },
             ], done);
         });
