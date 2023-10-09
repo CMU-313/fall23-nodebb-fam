@@ -52,9 +52,22 @@ module.exports = function (SocketTopics) {
         topics.pushUnreadCount(socket.uid);
     };
 
+    SocketTopics.markAllResolved = async function (socket) {
+        if (socket.uid <= 0) {
+            throw new Error('[[error:invalid-uid]]');
+        }
+        await topics.markAllResolved(socket.uid);
+        topics.pushUnresolvedCount(socket.uid);
+    };
+
     SocketTopics.markCategoryTopicsRead = async function (socket, cid) {
         const tids = await topics.getUnreadTids({ cid: cid, uid: socket.uid, filter: '' });
         await SocketTopics.markAsRead(socket, tids);
+    };
+
+    SocketTopics.markCategoryTopicsResolved = async function (socket, cid) {
+        const tids = await topics.getUnresolvedTids({ cid: cid, uid: socket.uid, filter: '' });
+        await SocketTopics.markAsResolved(socket, tids);
     };
 
     SocketTopics.markUnread = async function (socket, tid) {

@@ -328,6 +328,31 @@ Notifications.markReadMultiple = async function (nids, uid) {
     ]);
 };
 
+Notifications.markResolvedMultiple = async function (nids, uid) {
+    nids = nids.filter(Boolean);
+    if (!Array.isArray(nids) || !nids.length || !(parseInt(uid, 10) > 0)) {
+        return;
+    }
+
+    let notificationKeys = nids.map(nid => `notifications:${nid}`);
+    let mergeIds = await db.getObjectsFields(notificationKeys, ['mergeId']);
+    // Isolate mergeIds and find related notifications
+    mergeIds = _.uniq(mergeIds.map(set => set.mergeId));
+
+    const relatedNids = await Notifications.findRelated(mergeIds, `uid:${uid}:notifications:unresolved`);
+    notificationKeys = _.union(nids, relatedNids).map(nid => `notifications:${nid}`);
+
+    let notificationData = await db.getObjectsFields(notificationKeys, ['nid', 'datetime']);
+    notificationData = notificationData.filter(n => n && n.nid);
+
+    nids = notificationData.map(n => n.nid);
+    const datetimes = notificationData.map(n => (n && n.datetime) || Date.now());
+    await Promise.all([
+        db.sortedSetRemove(`uid:${uid}:notifications:unresolved`, nids),
+        db.sortedSetAdd(`uid:${uid}:notifications:resolved`, datetimes, nids),
+    ]);
+};
+
 Notifications.markAllRead = async function (uid) {
     const nids = await db.getSortedSetRevRange(`uid:${uid}:notifications:unread`, 0, 99);
     await Notifications.markReadMultiple(nids, uid);

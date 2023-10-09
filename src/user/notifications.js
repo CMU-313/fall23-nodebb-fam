@@ -159,6 +159,17 @@ UserNotifications.getUnreadByField = async function (uid, field, values) {
     return notifData.filter(n => n && n[field] && valuesSet.has(String(n[field]))).map(n => n.nid);
 };
 
+UserNotifications.getUnresolvedByField = async function (uid, field, values) {
+    const nids = await db.getSortedSetRevRange(`uid:${uid}:notifications:unresolved`, 0, 99);
+    if (!nids.length) {
+        return [];
+    }
+    const keys = nids.map(nid => `notifications:${nid}`);
+    const notifData = await db.getObjectsFields(keys, ['nid', field]);
+    const valuesSet = new Set(values.map(value => String(value)));
+    return notifData.filter(n => n && n[field] && valuesSet.has(String(n[field]))).map(n => n.nid);
+};
+
 UserNotifications.deleteAll = async function (uid) {
     if (parseInt(uid, 10) <= 0) {
         return;

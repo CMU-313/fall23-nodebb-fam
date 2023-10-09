@@ -21,6 +21,12 @@ module.exports = function (Topics) {
         return counts && counts[filter];
     };
 
+    Topics.getTotalUnresolved = async function (uid, filter) {
+        filter = filter || '';
+        const counts = await Topics.getUnresolvedTids({ cid: 0, uid: uid, count: true });
+        return counts && counts[filter];
+    };
+
     Topics.getUnreadTopics = async function (params) {
         const unreadTopics = {
             showSelect: true,
@@ -46,14 +52,50 @@ module.exports = function (Topics) {
         return unreadTopics;
     };
 
+    Topics.getUnresolvedTopics = async function (params) {
+        const unresolvedTopics = {
+            showSelect: true,
+            nextStart: 0,
+            topics: [],
+        };
+        let tids = await Topics.getUnresolvedTids(params);
+        unresolvedTopics.topicCount = tids.length;
+
+        if (!tids.length) {
+            return unresolvedTopics;
+        }
+
+        tids = tids.slice(params.start, params.stop !== -1 ? params.stop + 1 : undefined);
+
+        const topicData = await Topics.getTopicsByTids(tids, params.uid);
+        if (!topicData.length) {
+            return unresolvedTopics;
+        }
+        Topics.calculateTopicIndices(topicData, params.start);
+        unresolvedTopics.topics = topicData;
+        unresolvedTopics.nextStart = params.stop + 1;
+        return unresolvedTopics;
+    };
+
     Topics.unreadCutoff = async function (uid) {
         const cutoff = Date.now() - (meta.config.unreadCutoff * 86400000);
         const data = await plugins.hooks.fire('filter:topics.unreadCutoff', { uid: uid, cutoff: cutoff });
         return parseInt(data.cutoff, 10);
     };
 
+    Topics.unresolvedCutoff = async function (uid) {
+        const cutoff = Date.now() - (meta.config.unresolvedCutoff * 86400000);
+        const data = await plugins.hooks.fire('filter:topics.unresolvedCutoff', { uid: uid, cutoff: cutoff });
+        return parseInt(data.cutoff, 10);
+    };
+
     Topics.getUnreadTids = async function (params) {
         const results = await Topics.getUnreadData(params);
+        return params.count ? results.counts : results.tids;
+    };
+
+    Topics.getUnresolvedTids = async function (params) {
+        const results = await Topics.getUnresolvedData(params);
         return params.count ? results.counts : results.tids;
     };
 
@@ -72,6 +114,32 @@ module.exports = function (Topics) {
         }
 
         const result = await plugins.hooks.fire('filter:topics.getUnreadTids', {
+            uid: uid,
+            tids: data.tids,
+            counts: data.counts,
+            tidsByFilter: data.tidsByFilter,
+            cid: params.cid,
+            filter: params.filter,
+            query: params.query || {},
+        });
+        return result;
+    };
+
+    Topics.getUnresolvedData = async function (params) {
+        const uid = parseInt(params.uid, 10);
+
+        params.filter = params.filter || '';
+
+        if (params.cid && !Array.isArray(params.cid)) {
+            params.cid = [params.cid];
+        }
+
+        const data = await getTids(params);
+        if (uid <= 0 || !data.tids || !data.tids.length) {
+            return data;
+        }
+
+        const result = await plugins.hooks.fire('filter:topics.getUnresolvedTids', {
             uid: uid,
             tids: data.tids,
             counts: data.counts,
@@ -266,6 +334,20 @@ module.exports = function (Topics) {
         });
     };
 
+    Topics.pushUnresolvedCount = async function (uid) {
+        if (!uid || parseInt(uid, 10) <= 0) {
+            return;
+        }
+        const results = await Topics.getUnreadTids({ uid: uid, count: true });
+        require('../socket.io').in(`uid_${uid}`).emit('event:unresolved.updateCount', {
+            unresolvedTopicCount: results[''],
+            unresolvedNewTopicCount: results.new,
+            unresolvedWatchedTopicCount: results.watched,
+            unresolvedUnrepliedTopicCount: results.unreplied,
+            unresolvedUnreadTopicCount: results.unread,
+        });
+    };
+
     Topics.markAsUnreadForAll = async function (tid) {
         await Topics.markCategoryUnreadForAll(tid);
     };
@@ -312,6 +394,44 @@ module.exports = function (Topics) {
         return true;
     };
 
+    Topics.markAsResolved = async function (tids, uid) {
+        if (!Array.isArray(tids) || !tids.length) {
+            return false;
+        }
+
+        tids = _.uniq(tids).filter(tid => tid && utils.isNumber(tid));
+
+        if (!tids.length) {
+            return false;
+        }
+        const [topicScores, userScores] = await Promise.all([
+            Topics.getTopicsFields(tids, ['tid', 'lastposttime', 'scheduled']),
+            db.sortedSetScores(`uid:${uid}:tids_resolved`, tids),
+        ]);
+
+        const topics = topicScores.filter((t, i) => t.lastposttime &&
+            (!userScores[i] || userScores[i] < t.lastposttime));
+        tids = topics.map(t => t.tid);
+
+        if (!tids.length) {
+            return false;
+        }
+
+        const now = Date.now();
+        const scores = topics.map(topic => (topic.scheduled ? topic.lastposttime : now));
+        const [topicData] = await Promise.all([
+            Topics.getTopicsFields(tids, ['cid']),
+            db.sortedSetAdd(`uid:${uid}:tids_resolved`, scores, tids),
+            db.sortedSetRemove(`uid:${uid}:tids_unresolved`, tids),
+        ]);
+
+        const cids = _.uniq(topicData.map(t => t && t.cid).filter(Boolean));
+        await categories.markAsResolved(cids, uid);
+
+        plugins.hooks.fire('action:topics.markAsResolved', { uid: uid, tids: tids });
+        return true;
+    };
+
     Topics.markAllRead = async function (uid) {
         const cutoff = await Topics.unreadCutoff(uid);
         const tids = await db.getSortedSetRevRangeByScore('topics:recent', 0, -1, '+inf', cutoff);
@@ -320,12 +440,29 @@ module.exports = function (Topics) {
         await db.delete(`uid:${uid}:tids_unread`);
     };
 
+    Topics.markAllResolved = async function (uid) {
+        const cutoff = await Topics.unresolvedCutoff(uid);
+        const tids = await db.getSortedSetRevRangeByScore('topics:recent', 0, -1, '+inf', cutoff);
+        Topics.markTopicNotificationsRead(tids, uid);
+        await Topics.markAsRead(tids, uid);
+        await db.delete(`uid:${uid}:tids_unresolved`);
+    };
+
     Topics.markTopicNotificationsRead = async function (tids, uid) {
         if (!Array.isArray(tids) || !tids.length) {
             return;
         }
         const nids = await user.notifications.getUnreadByField(uid, 'tid', tids);
         await notifications.markReadMultiple(nids, uid);
+        user.notifications.pushCount(uid);
+    };
+
+    Topics.markTopicNotificationsResolved = async function (tids, uid) {
+        if (!Array.isArray(tids) || !tids.length) {
+            return;
+        }
+        const nids = await user.notifications.getUnresolvedByField(uid, 'tid', tids);
+        await notifications.markResolvedMultiple(nids, uid);
         user.notifications.pushCount(uid);
     };
 
