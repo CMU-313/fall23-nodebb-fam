@@ -247,8 +247,10 @@ describe('Search', () => {
             },
             function (result, next) {
                 assert(result.posts.length, 2);
-                assert(result.posts[0].topic.title === 'child category topic');
-                assert(result.posts[1].topic.title === 'java mongodb redis');
+                const regexPattern0 = /^child category topic \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+                assert.ok(regexPattern0.test(result.posts[0].topic.title), `Topic title "${result.posts[0].topic.title}" does not match the expected pattern`);
+                const regexPattern1 = /^java mongodb redis \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+                assert.ok(regexPattern1.test(result.posts[1].topic.title), `Topic title "${result.posts[1].topic.title}" does not match the expected pattern`);
                 next();
             },
         ], done);

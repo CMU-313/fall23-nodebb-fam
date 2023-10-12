@@ -39,7 +39,6 @@ module.exports = function (Topics) {
         const formattedTimestamp = new Date(topicData.timestamp).toLocaleString();
         topicData.title = data.title + ' (' + formattedTimestamp + ')';
         
-        
         if (Array.isArray(data.tags) && data.tags.length) {
             topicData.tags = data.tags.join(',');
         }

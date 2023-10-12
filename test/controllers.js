@@ -943,7 +943,50 @@ describe('Controllers', () => {
                         assert.ifError(err);
                         assert.equal(res.statusCode, 200);
                         assert(body);
-                        assert.equal(body.posts[0].content, 'test topic content');
+                        assert.equal(body.posts[0].content, 'test topic content', 'This post should be found because the group name is in the post title');
+                    });
+                });
+                topics.post({
+                    uid: fooUid,
+                    title: 'this is a post without the group title',
+                    content: 'not test topic content',
+                    cid: cid,
+                }, (err) => {
+                    assert.ifError(err);
+                    request(`${nconf.get('url')}/api/groups/group-details`, { json: true }, (err, res, body) => {
+                        assert.ifError(err);
+                        assert.equal(res.statusCode, 200);
+                        assert(body);
+                        assert.equal(body.posts[0].content, 'test topic content', 'This post should still exist from before');
+                        assert.equal(undefined, body.posts[1], 'There should not be a second post in this group');
+                        done();
+                    });
+                });
+            });
+        });
+    });
+
+    it('should load misc page and filter unmatched posts in that group', (done) => {
+        groups.create({
+            name: 'miscellaneous',
+            description: 'unmatched posts go here!',
+            hidden: 0,
+        }, (err) => {
+            assert.ifError(err);
+            groups.join('miscellaneous', fooUid, (err) => {
+                assert.ifError(err);
+                topics.post({
+                    uid: fooUid,
+                    title: 'this is an unmatched post',
+                    content: 'test topic content for misc',
+                    cid: cid,
+                }, (err) => {
+                    assert.ifError(err);
+                    request(`${nconf.get('url')}/api/groups/miscellaneous`, { json: true }, (err, res, body) => {
+                        assert.ifError(err);
+                        assert.equal(res.statusCode, 200);
+                        assert(body);
+                        assert.equal(body.posts[0].content, 'test topic content for misc');
                         done();
                     });
                 });
@@ -2208,7 +2251,10 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?sort=most_posts`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                assert.equal(body.topics[0].title, 'topic 2');
+                                const time = body.topics[0].timestamp
+                                const originalTitle = body.topics[0].title;
+                                const updatedTitle = originalTitle.replace(/&#x2F;/g, '/');
+                                assert.equal(updatedTitle, 'topic 2' + ' (' + new Date(time).toLocaleString() + ')');
                                 assert.equal(body.topics[0].postcount, 2);
                                 assert.equal(body.topics[1].postcount, 1);
                                 next();
@@ -2241,7 +2287,10 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?tag=node&author=foo`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                assert.equal(body.topics[0].title, 'topic 2');
+                                const time = body.topics[0].timestamp
+                                const originalTitle = body.topics[0].title;
+                                const updatedTitle = originalTitle.replace(/&#x2F;/g, '/');
+                                assert.equal(updatedTitle, 'topic 2' + ' (' + new Date(time).toLocaleString() + ')');
                                 next();
                             });
                         },
@@ -2249,8 +2298,15 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?tag[]=java&tag[]=cpp`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                assert.equal(body.topics[0].title, 'topic 3');
-                                assert.equal(body.topics[1].title, 'topic 1');
+                                const time0 = body.topics[0].timestamp
+                                const originalTitle0 = body.topics[0].title;
+                                const updatedTitle0 = originalTitle0.replace(/&#x2F;/g, '/');
+                                assert.equal(updatedTitle0, 'topic 3' + ' (' + new Date(time0).toLocaleString() + ')');
+                                assert.equal(res.statusCode, 200);
+                                const time1 = body.topics[1].timestamp
+                                const originalTitle1 = body.topics[1].title;
+                                const updatedTitle1 = originalTitle1.replace(/&#x2F;/g, '/');
+                                assert.equal(updatedTitle1, 'topic 1' + ' (' + new Date(time1).toLocaleString() + ')');   
                                 next();
                             });
                         },
