@@ -91,8 +91,9 @@ define('forum/topic/threadTools', [
                 if (err) {
                     return alerts.error(err);
                 }
-                components.get('topic/resolve').toggleClass('hidden', data.resolved).parent().attr('hidden', data.resolved ? '' : null);
-                //components.get('topic/unresolve').toggleClass('hidden', !data.resolved).parent().attr('hidden', !data.resolved ? '' : null);
+                alerts.success('Mark As UnResolved');
+                $('[component="topic/unresolved"]').toggleClass('hidden', true);
+                $('[component="topic/resolved"]').toggleClass('hidden', false);
             });
             return false;
         });
@@ -102,9 +103,9 @@ define('forum/topic/threadTools', [
                 if (err) {
                     return alerts.error(err);
                 }
-                //hookData.templateData.icons.push(getIconMarkup(<span class="answered badge border text-success border-success"><i class="fa fa-check"></i><span> [[qanda:topic_solved]]</span></span>));
                 alerts.success('Mark As Resolved');
-                components.get('topic/unresolved').toggleClass('hidden', data.isLocked).parent().attr('hidden', data.isLocked ? '' : null);
+                $('[component="topic/unresolved"]').toggleClass('hidden', false);
+                $('[component="topic/resolved"]').toggleClass('hidden', true);
             });
             return false;
         });
@@ -364,7 +365,6 @@ define('forum/topic/threadTools', [
         posts.addTopicEvents(data.events);
     };
 
-
     ThreadTools.setPinnedState = function (data) {
         const threadEl = components.get('topic');
         if (parseInt(data.tid, 10) !== parseInt(threadEl.attr('data-tid'), 10)) {
@@ -384,29 +384,6 @@ define('forum/topic/threadTools', [
         }
         ajaxify.data.pinned = data.pinned;
 
-        posts.addTopicEvents(data.events);
-    };
-
-    ThreadTools.setResolvedState = function (data) {
-        const threadEl = components.get('topic');
-        if (parseInt(data.tid, 10) !== parseInt(threadEl.attr('data-tid'), 10)) {
-            return;
-        }
-
-        const isResolved = data.resolved;
-
-        const unresolvedBadge = $('[component="topic/unresolved"]');
-        const resolvedBadge = $('[component="topic/resolved"]');
-        const hideReply = isResolved && !ajaxify.data.privileges.isAdminOrMod;
-
-        unresolvedBadge.toggleClass('hidden', isResolved);
-        resolvedBadge.toggleClass('hidden', !isResolved);
-
-        ajaxify.data.resolved = isResolved;
-
-        // You may want to add other logic or UI updates here
-
-        // Add any necessary event handling
         posts.addTopicEvents(data.events);
     };
 

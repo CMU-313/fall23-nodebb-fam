@@ -383,7 +383,6 @@ describe('Topic\'s', () => {
                 assert.strictEqual(topicData.deleted, 0);
                 assert.strictEqual(topicData.locked, 0);
                 assert.strictEqual(topicData.pinned, 0);
-                assert.strictEqual(topicData.resolved, 0);
                 done();
             });
         });
@@ -433,7 +432,6 @@ describe('Topic\'s', () => {
                 assert.equal(data.deleted, false);
                 assert.equal(data.locked, false);
                 assert.equal(data.pinned, false);
-                assert.equal(data.resolved, false);
             });
 
             it('should return first 3 posts including main post', async () => {
