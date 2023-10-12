@@ -382,7 +382,7 @@ module.exports = function (Topics) {
         const topicData = await Topics.getTopicFields(tid, ['unresolved']);
         topicData.unresolved = true;
     };
-       
+
     Topics.markAsResolved = async function (tid) {
         const exists = await Topics.exists(tid);
         if (!exists) {
