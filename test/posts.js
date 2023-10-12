@@ -1099,10 +1099,12 @@ describe('Post\'s', () => {
             meta.config.groupsExemptFromPostQueue = ['registered-users'];
             const uid = await user.create({ username: 'mergeexemptuser' });
             const result = await apiTopics.create({ uid: uid, emit: () => {} }, { title: 'should not be queued', content: 'topic content', cid: cid });
-            const time = result.timestamp
-            const originalTitle = result.title
+            const time = result.timestamp;
+            const originalTitle = result.title;
             const updatedTitle = originalTitle.replace(/&#x2F;/g, '/');
-            assert.strictEqual(updatedTitle, 'should not be queued' + ' (' + new Date(time).toLocaleString() + ')');
+            const formattedTimestamp = new Date(time).toLocaleString();
+            const expectedTitle = `should not be queued (${formattedTimestamp})`;
+            assert.strictEqual(updatedTitle, expectedTitle);
             meta.config.groupsExemptFromPostQueue = oldValue;
         });
 

@@ -267,19 +267,15 @@ describe('Categories', () => {
                 cid: categoryObj.cid,
                 after: 0,
             });
-        
             // Define a regex pattern for Test Topic Title
             const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
-        
             // Ensure the first element is the deleted topic marker
             assert.strictEqual(data.topics.map(t => t.title)[0], '[[topic:topic_is_deleted]]', 'First topic should be deleted');
-        
             // Check each topic title against the regex pattern, skipping the first element
-            data.topics.slice(1).forEach(t => {
+            data.topics.slice(1).forEach((t) => {
                 assert.ok(regexPattern.test(t.title), `Topic title "${t.title}" does not match the expected pattern`);
             });
         });
-        
 
         it('should load topic count', (done) => {
             socketCategories.getTopicCount({ uid: posterUid }, categoryObj.cid, (err, topicCount) => {

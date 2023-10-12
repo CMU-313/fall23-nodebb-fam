@@ -2251,10 +2251,13 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?sort=most_posts`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                const time = body.topics[0].timestamp
+                                const time = body.topics[0].timestamp;
                                 const originalTitle = body.topics[0].title;
                                 const updatedTitle = originalTitle.replace(/&#x2F;/g, '/');
-                                assert.equal(updatedTitle, 'topic 2' + ' (' + new Date(time).toLocaleString() + ')');
+                                const formattedTimestamp = new Date(time).toLocaleString();
+                                const expectedTitle = `topic 2 (${formattedTimestamp})`;
+
+                                assert.equal(updatedTitle, expectedTitle);
                                 assert.equal(body.topics[0].postcount, 2);
                                 assert.equal(body.topics[1].postcount, 1);
                                 next();
@@ -2287,10 +2290,13 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?tag=node&author=foo`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                const time = body.topics[0].timestamp
+                                const time = body.topics[0].timestamp;
                                 const originalTitle = body.topics[0].title;
                                 const updatedTitle = originalTitle.replace(/&#x2F;/g, '/');
-                                assert.equal(updatedTitle, 'topic 2' + ' (' + new Date(time).toLocaleString() + ')');
+                                const formattedTimestamp = new Date(time).toLocaleString();
+                                const expectedTitle = `topic 2 (${formattedTimestamp})`;
+
+                                assert.equal(updatedTitle, expectedTitle);
                                 next();
                             });
                         },
@@ -2298,15 +2304,19 @@ describe('Controllers', () => {
                             request(`${nconf.get('url')}/api/category/${category.slug}?tag[]=java&tag[]=cpp`, { jar: jar, json: true }, (err, res, body) => {
                                 assert.ifError(err);
                                 assert.equal(res.statusCode, 200);
-                                const time0 = body.topics[0].timestamp
+                                const time0 = body.topics[0].timestamp;
                                 const originalTitle0 = body.topics[0].title;
                                 const updatedTitle0 = originalTitle0.replace(/&#x2F;/g, '/');
-                                assert.equal(updatedTitle0, 'topic 3' + ' (' + new Date(time0).toLocaleString() + ')');
+                                const formattedTimestamp0 = new Date(time0).toLocaleString();
+                                const expectedTitle0 = `topic 3 (${formattedTimestamp0})`;
+                                assert.equal(updatedTitle0, expectedTitle0);
                                 assert.equal(res.statusCode, 200);
-                                const time1 = body.topics[1].timestamp
+                                const time1 = body.topics[1].timestamp;
                                 const originalTitle1 = body.topics[1].title;
                                 const updatedTitle1 = originalTitle1.replace(/&#x2F;/g, '/');
-                                assert.equal(updatedTitle1, 'topic 1' + ' (' + new Date(time1).toLocaleString() + ')');   
+                                const formattedTimestamp1 = new Date(time1).toLocaleString();
+                                const expectedTitle1 = `topic 1 (${formattedTimestamp1})`;
+                                assert.equal(updatedTitle1, expectedTitle1);
                                 next();
                             });
                         },
