@@ -45,6 +45,20 @@ module.exports = function (SocketTopics) {
         topics.pushUnreadCount(socket.uid);
     };
 
+    SocketTopics.markUnresolved = async function (socket, tid) {
+        if (!tid || socket.uid <= 0) {
+            throw new Error('[[error:invalid-data]]');
+        }
+        await topics.markUnresolved(tid, socket.uid);
+    };
+
+    SocketTopics.markAsResolved = async function (socket, tid) {
+        if (!tid || socket.uid <= 0) {
+            throw new Error('[[error:invalid-data]]');
+        }
+        await topics.markAsResolved(tid, socket.uid);
+    };
+
     SocketTopics.markAsUnreadForAll = async function (socket, tids) {
         if (!Array.isArray(tids)) {
             throw new Error('[[error:invalid-tid]]');
