@@ -81,6 +81,26 @@ describe('Topic\'s', () => {
             });
         });
 
+        it('should put timestamp in topic title', (done) => {
+            topics.post({
+                uid: topic.userId,
+                title: topic.title,
+                content: topic.content,
+                cid: topic.categoryId,
+            }, (err, result) => {
+                assert.ifError(err);
+                assert(result);
+                topic.tid = result.topicData.tid;
+                const formattedTimestamp = new Date(Date.now()).toLocaleString();
+                const expectedTitle = `Test Topic Title (${formattedTimestamp})`;
+                assert.strictEqual(
+                    result.topicData.title.replace(/&#x2F;/g, '/'),
+                    expectedTitle
+                );
+                done();
+            });
+        });
+
         it('should get post count', (done) => {
             socketTopics.postcount({ uid: adminUid }, topic.tid, (err, count) => {
                 assert.ifError(err);
@@ -190,7 +210,8 @@ describe('Topic\'s', () => {
             });
 
             assert.strictEqual(result.body.status.code, 'ok');
-            assert.strictEqual(result.body.response.title, 'just a title');
+            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            assert.ok(regexPattern.test(result.body.response.title), `Topic title "${result.body.response.title}" does not match the expected pattern`);
             assert.strictEqual(result.body.response.user.username, '[[global:guest]]');
 
             const replyResult = await helpers.request('post', `/api/v3/topics/${result.body.response.tid}`, {
@@ -225,7 +246,8 @@ describe('Topic\'s', () => {
             });
 
             assert.strictEqual(result.body.status.code, 'ok');
-            assert.strictEqual(result.body.response.title, 'just a title');
+            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            assert.ok(regexPattern.test(result.body.response.title), `Topic title "${result.body.response.title}" does not match the expected pattern`);
             assert.strictEqual(result.body.response.user.username, 'guest123');
             assert.strictEqual(result.body.response.user.displayname, 'guest123');
 
@@ -399,7 +421,8 @@ describe('Topic\'s', () => {
         it('should get topic title by pid', (done) => {
             topics.getTitleByPid(newPost.pid, (err, title) => {
                 assert.ifError(err);
-                assert.equal(title, topic.title);
+                const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+                assert.ok(regexPattern.test(title), `Topic title "${title}" does not match the expected pattern`);
                 done();
             });
         });
@@ -596,9 +619,13 @@ describe('Topic\'s', () => {
             topics.post(topicPostData, (err, result) => {
                 assert.ifError(err);
                 topics.getTopicData(result.topicData.tid, (err, topicData) => {
+                    const formattedTimestamp0 = new Date(topicData.timestamp).toLocaleString();
+                    const formattedTimestamp1 = new Date(topicData.timestamp).toLocaleString().replace(/\//g, '&#x2F;');
+                    const expectedTitle = `${title} (${formattedTimestamp0})`;
+                    const expectedTitleEscaped = `${titleEscaped} (${formattedTimestamp1})`;
                     assert.ifError(err);
-                    assert.strictEqual(topicData.titleRaw, title);
-                    assert.strictEqual(topicData.title, titleEscaped);
+                    assert.strictEqual(topicData.titleRaw, expectedTitle);
+                    assert.strictEqual(topicData.title, expectedTitleEscaped);
                     done();
                 });
             });
@@ -1899,7 +1926,9 @@ describe('Topic\'s', () => {
             topics.getRelatedTopics(topicData, 0, (err, data) => {
                 assert.ifError(err);
                 assert(Array.isArray(data));
-                assert.equal(data[0].title, 'topic title 2');
+                const formattedTimestamp = new Date(data[0].timestamp).toLocaleString();
+                const expectedTitle = `topic title 2 (${formattedTimestamp})`;
+                assert.equal(data[0].title.replace(/&#x2F;/g, '/'), expectedTitle);
                 meta.config.maximumRelatedTopics = 0;
                 done();
             });
@@ -2499,7 +2528,9 @@ describe('Topic\'s', () => {
             assert.equal(topic1.posts[1].content, 'topic 2 OP');
             assert.equal(topic1.posts[2].content, 'topic 1 reply');
             assert.equal(topic1.posts[3].content, 'topic 2 reply');
-            assert.equal(topic1.title, 'topic 1');
+            const formattedTimestamp = new Date(topic1.timestamp).toLocaleString();
+            const expectedTitle = `topic 1 (${formattedTimestamp})`;
+            assert.equal(topic1.title.replace(/&#x2F;/g, '/'), expectedTitle);
         });
 
         it('should return properly for merged topic', (done) => {
@@ -2537,7 +2568,9 @@ describe('Topic\'s', () => {
             assert.equal(topic2.posts[1].content, 'topic 1 OP');
             assert.equal(topic2.posts[2].content, 'topic 1 reply');
             assert.equal(topic2.posts[3].content, 'topic 2 reply');
-            assert.equal(topic2.title, 'topic 2');
+            const formattedTimestamp = new Date(topic2.timestamp).toLocaleString();
+            const expectedTitle = `topic 2 (${formattedTimestamp})`;
+            assert.equal(topic2.title.replace(/&#x2F;/g, '/'), expectedTitle);
         });
 
         it('should merge 2 topics with options newTopicTitle', async () => {
@@ -2568,7 +2601,9 @@ describe('Topic\'s', () => {
             assert.equal(topic3.posts[1].content, 'topic 2 OP');
             assert.equal(topic3.posts[2].content, 'topic 1 reply');
             assert.equal(topic3.posts[3].content, 'topic 2 reply');
-            assert.equal(topic3.title, 'new merge topic');
+            const formattedTimestamp = new Date(topic3.timestamp).toLocaleString();
+            const expectedTitle = `new merge topic (${formattedTimestamp})`;
+            assert.equal(topic3.title.replace(/&#x2F;/g, '/'), expectedTitle);
         });
     });
 
@@ -2610,8 +2645,12 @@ describe('Topic\'s', () => {
                 stop: -1,
                 sort: 'recent',
             });
-            assert.strictEqual(data.topics[0].title, 'most recent replied');
-            assert.strictEqual(data.topics[1].title, 'old replied');
+            const formattedTimestamp0 = new Date(data.topics[0].timestamp).toLocaleString();
+            const expectedTitle0 = `most recent replied (${formattedTimestamp0})`;
+            const formattedTimestamp1 = new Date(data.topics[1].timestamp).toLocaleString();
+            const expectedTitle1 = `old replied (${formattedTimestamp1})`;
+            assert.strictEqual(data.topics[0].title.replace(/&#x2F;/g, '/'), expectedTitle0);
+            assert.strictEqual(data.topics[1].title.replace(/&#x2F;/g, '/'), expectedTitle1);
         });
 
         it('should get topics recent replied last', async () => {
@@ -2622,8 +2661,12 @@ describe('Topic\'s', () => {
                 stop: -1,
                 sort: 'old',
             });
-            assert.strictEqual(data.topics[0].title, 'old replied');
-            assert.strictEqual(data.topics[1].title, 'most recent replied');
+            const formattedTimestamp0 = new Date(data.topics[0].timestamp).toLocaleString();
+            const expectedTitle0 = `old replied (${formattedTimestamp0})`;
+            const formattedTimestamp1 = new Date(data.topics[1].timestamp).toLocaleString();
+            const expectedTitle1 = `most recent replied (${formattedTimestamp1})`;
+            assert.strictEqual(data.topics[0].title.replace(/&#x2F;/g, '/'), expectedTitle0);
+            assert.strictEqual(data.topics[1].title.replace(/&#x2F;/g, '/'), expectedTitle1);
         });
     });
 
@@ -2678,6 +2721,17 @@ describe('Topic\'s', () => {
                 `cid:${categoryObj.cid}:tids:posts`,
             ], topicData.tid);
             assert.deepStrictEqual(isMember, [false, false, false]);
+        });
+
+        it('should have a timestamp of the scheduled topic time in the topic title', async () => {
+            topicData = (await topics.post(topic)).topicData;
+            topicData = await topics.getTopicData(topicData.tid);
+            const formattedTimestamp = new Date(topicData.timestamp).toLocaleString();
+            const expectedTitle = `Scheduled Test Topic Title (${formattedTimestamp})`;
+            assert.strictEqual(
+                expectedTitle,
+                topicData.title.replace(/&#x2F;/g, '/')
+            );
         });
 
         it('should update poster\'s lastposttime with "action time"', async () => {
@@ -2790,7 +2844,7 @@ describe('Topic\'s', () => {
             assert(scores.every(publishTime => publishTime === editedTopic.timestamp));
         });
 
-        it('should able to publish a scheduled topic', async () => {
+        it('should able to publish a rescheduled topic with an updated timestamp', async () => {
             const topicTimestamp = await topics.getTopicField(topicData.tid, 'timestamp');
 
             mockdate.set(topicTimestamp);
