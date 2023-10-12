@@ -58,6 +58,15 @@ describe('Groups', () => {
             disableJoinRequests: 1,
         });
 
+        await Groups.create({
+            name: 'Miscellaneous',
+            userTitle: 'Miscellaneous',
+            description: 'Contains unmatched posts',
+            hidden: 0,
+            private: 1,
+            disableJoinRequests: 1,
+        });
+
         // Also create a hidden group
         await Groups.join('Hidden', 'Test');
         // create another group that starts with test for search/sort
@@ -80,7 +89,7 @@ describe('Groups', () => {
         it('should list the groups present', (done) => {
             Groups.getGroupsFromSet('groups:visible:createtime', 0, -1, (err, groups) => {
                 assert.ifError(err);
-                assert.equal(groups.length, 5);
+                assert.equal(groups.length, 6);
                 done();
             });
         });
@@ -128,7 +137,7 @@ describe('Groups', () => {
         it('should return the groups when search query is empty', (done) => {
             socketGroups.search({ uid: adminUid }, { query: '' }, (err, groups) => {
                 assert.ifError(err);
-                assert.equal(5, groups.length);
+                assert.equal(6, groups.length);
                 done();
             });
         });
@@ -667,6 +676,12 @@ describe('Groups', () => {
             await apiGroups.join({ uid: adminUid }, { slug: slug, uid: uid });
             const isGlobalMod = await User.isGlobalModerator(uid);
             assert.strictEqual(isGlobalMod, true);
+        });
+
+        it('should add user to Miscellaneous group', async () => {
+            const uid = await User.create({ username: 'glomod' });
+            const slug = await Groups.getGroupField('Miscellaneous', 'slug');
+            await apiGroups.join({ uid: adminUid }, { slug: slug, uid: uid });
         });
 
         it('should add user to multiple groups', (done) => {
