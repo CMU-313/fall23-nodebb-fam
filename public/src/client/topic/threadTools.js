@@ -87,13 +87,13 @@ define('forum/topic/threadTools', [
         });
 
         topicContainer.on('click', '[component="topic/mark-unresolved"]', function () {
-            socket.emit('topics.markUnresolved', tid, function (err) {
+            socket.emit('topics.markAsResolved', tid, function (err) {
                 if (err) {
                     return alerts.error(err);
                 }
                 $('[component="topic/unresolved"]').toggleClass('hidden', true);
                 $('[component="topic/resolved"]').toggleClass('hidden', false);
-                alerts.success('Mark As UnResolved');
+                alerts.success('Mark As Unresolved');
             });
             return false;
         });
@@ -105,7 +105,7 @@ define('forum/topic/threadTools', [
                 }
                 $('[component="topic/unresolved"]').toggleClass('hidden', false);
                 $('[component="topic/resolved"]').toggleClass('hidden', true);
-                alerts.success('Mark As UnResolved');
+                alerts.success('Mark As Resolved');
             });
             return false;
         });
