@@ -14,18 +14,18 @@
                         <i component="topic/locked" class="fa fa-lock <!-- IF !locked -->hidden<!-- ENDIF !locked -->" title="[[topic:locked]]"></i>
                         <i class="fa fa-arrow-circle-right <!-- IF !oldCid -->hidden<!-- ENDIF !oldCid -->" title="{{{ if privileges.isAdminOrMod }}}[[topic:moved-from, {oldCategory.name}]]{{{ else }}}[[topic:moved]]{{{ end }}}"></i>
                         <p>
-                        <span class="unresolved">
-                            <i class="fa fa-question-circle">
-                            </i> 
-                            Unresolved
-                            {{{each icons}}}{@value}{{{end}}}
+                        <span class="unanswered badge border text-warning border-warning">
+                            <i component="topic/unresolved" class="fa fa-question-circle"></i>
+                            <span <!-- IF !resolved -->class="hidden"<!-- ENDIF !resolved -->>
+                                Unresolved
+                            </span>
                         </span>
-                        </p>
-                        <span class="resolved">
-                                <i class="fa fa-question-circle">
-                                </i> 
+                        <span class="answered badge border text-success border-success">
+                            <i component="topic/resolved" class="fa fa-check"></i>
+                            <span <!-- IF resolved -->class="hidden"<!-- ENDIF resolved -->>
                                 Resolved
                             </span>
+                        </span>
                         {{{each icons}}}{@value}{{{end}}}
                     </span>
                     <span component="topic/title">{title}</span>

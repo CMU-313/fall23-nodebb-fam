@@ -530,8 +530,9 @@ module.exports = function (Topics) {
         if (!exists) {
             throw new Error('[[error:no-topic]]');
         }
-        const topicData = await getTopicFields(tid, ['unresolved']);
+        const topicData = await Topics.getTopicFields(tid, ['unresolved']);
         topicData.unresolved = true;
+        console.log(topicData.unresolved);
     };
 
     Topics.markAsResolved = async function (tid, uid) {
@@ -539,8 +540,9 @@ module.exports = function (Topics) {
         if (!exists) {
             throw new Error('[[error:no-topic]]');
         }
-        const topicData = await getTopicFields(tid, ['unresolved']);
+        const topicData = await Topics.getTopicFields(tid, ['unresolved']);
         topicData.unresolved = false;
+        console.log(topicData.unresolved);
     };
 
     Topics.filterNewTids = async function (tids, uid) {
