@@ -1,4 +1,4 @@
-Testing our Features:
+# Testing our Features:
 
 Within the following existing test files, you will find edited tests and new tests. The existing test files contain a comprehensive collection of tests for ensuring the reliability of the code. We leverage NodeBB's existing tests by editing them to fit our new functionality. Additionally, we implemented new tests to account for any other cases that NodeBB would not have made due to any edge cases with our new features.
 
@@ -54,7 +54,7 @@ Our tests ensure that a timestamp shows up in any post made by editing existing 
     - Ensures that categories with banned users can still contain valid posts with timestamps
 
 
-Using our Features:
+# Using our Features:
 
 Before beginning any testing, please run redis-cli FLUSHALL in your terminal. Then, setup the codebase again with ./nodebb setup (make sure to store the admin password shown at the end) and start the NodeBB server.
 
