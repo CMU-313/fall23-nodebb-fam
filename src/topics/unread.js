@@ -530,8 +530,17 @@ module.exports = function (Topics) {
         if (!exists) {
             throw new Error('[[error:no-topic]]');
         }
-        await db.sortedSetRemove(`uid:${uid}:tids_resolved`, tid);
-        await db.sortedSetAdd(`uid:${uid}:tids_unresolved`, Date.now(), tid);
+        const topicData = await getTopicFields(tid, ['unresolved']);
+        topicData.unresolved = true;
+    };
+
+    Topics.markAsResolved = async function (tid, uid) {
+        const exists = await Topics.exists(tid);
+        if (!exists) {
+            throw new Error('[[error:no-topic]]');
+        }
+        const topicData = await getTopicFields(tid, ['unresolved']);
+        topicData.unresolved = false;
     };
 
     Topics.filterNewTids = async function (tids, uid) {

@@ -87,17 +87,9 @@ define('forum/topic/threadTools', [
         });
 
         topicContainer.on('click', '[component="topic/mark-unresolved"]', function () {
-            socket.emit('topics.Unresolved', tid, function (err) {
+            socket.emit('topics.markUnresolved', tid, function (err) {
                 if (err) {
                     return alerts.error(err);
-                }
-
-                if (app.previousUrl && !app.previousUrl.match('^/topic')) {
-                    ajaxify.go(app.previousUrl, function () {
-                        handleBack.onBackClicked(true);
-                    });
-                } else if (ajaxify.data.category) {
-                    ajaxify.go('category/' + ajaxify.data.category.slug, handleBack.onBackClicked);
                 }
 
                 alerts.success('[[topic:mark_unresolved.success]]');
@@ -106,17 +98,9 @@ define('forum/topic/threadTools', [
         });
 
         topicContainer.on('click', '[component="topic/mark-resolved"]', function () {
-            socket.emit('topics.markResolved', tid, function (err) {
+            socket.emit('topics.markAsResolved', tid, function (err) {
                 if (err) {
                     return alerts.error(err);
-                }
-
-                if (app.previousUrl && !app.previousUrl.match('^/topic')) {
-                    ajaxify.go(app.previousUrl, function () {
-                        handleBack.onBackClicked(true);
-                    });
-                } else if (ajaxify.data.category) {
-                    ajaxify.go('category/' + ajaxify.data.category.slug, handleBack.onBackClicked);
                 }
 
                 alerts.success('[[topic:mark_resolved.success]]');

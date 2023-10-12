@@ -17,7 +17,7 @@ module.exports = function (SocketTopics) {
         await Promise.all(promises);
     };
 
-    SocketTopics.markAsResolved = async function (socket, tids) {
+    /*SocketTopics.markAsResolved = async function (socket, tids) {
         if (!Array.isArray(tids) || socket.uid <= 0) {
             throw new Error('[[error:invalid-data]]');
         }
@@ -27,7 +27,7 @@ module.exports = function (SocketTopics) {
             promises.push(topics.pushUnresolvedCount(socket.uid));
         }
         await Promise.all(promises);
-    };
+    };*/
 
 
     SocketTopics.markTopicNotificationsRead = async function (socket, tids) {
@@ -110,7 +110,13 @@ module.exports = function (SocketTopics) {
             throw new Error('[[error:invalid-data]]');
         }
         await topics.markUnresolved(tid, socket.uid);
-        topics.pushUnresolvedCount(socket.uid);
+    };
+
+    SocketTopics.markAsResolved = async function (socket, tid) {
+        if (!tid || socket.uid <= 0) {
+            throw new Error('[[error:invalid-data]]');
+        }
+        await topics.markAsResolved(tid, socket.uid);
     };
 
     SocketTopics.markAsUnresolvedForAll = async function (socket, tids) {

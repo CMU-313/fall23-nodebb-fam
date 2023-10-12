@@ -13,22 +13,19 @@
                         <i component="topic/pinned" class="fa fa-thumb-tack <!-- IF (scheduled || !pinned) -->hidden<!-- ENDIF (scheduled || !pinned) -->" title="{{{ if !pinExpiry }}}[[topic:pinned]]{{{ else }}}[[topic:pinned-with-expiry, {pinExpiryISO}]]{{{ end }}}"></i>
                         <i component="topic/locked" class="fa fa-lock <!-- IF !locked -->hidden<!-- ENDIF !locked -->" title="[[topic:locked]]"></i>
                         <i class="fa fa-arrow-circle-right <!-- IF !oldCid -->hidden<!-- ENDIF !oldCid -->" title="{{{ if privileges.isAdminOrMod }}}[[topic:moved-from, {oldCategory.name}]]{{{ else }}}[[topic:moved]]{{{ end }}}"></i>
-                         <!-- IF topics.unresolved -->
                         <p>
-                            <span class="unresolved">
-                                <i class="fa fa-question-circle">
-                                </i> 
-                                Unresolved
-                                {{{each icons}}}{@value}{{{end}}}
-                            </span>
+                        <span class="unresolved">
+                            <i class="fa fa-question-circle">
+                            </i> 
+                            Unresolved
+                            {{{each icons}}}{@value}{{{end}}}
+                        </span>
                         </p>
-                        <!-- ELSE -->
                         <span class="resolved">
                                 <i class="fa fa-question-circle">
                                 </i> 
                                 Resolved
                             </span>
-                        <!-- ENDIF topics.unresolved -->
                         {{{each icons}}}{@value}{{{end}}}
                     </span>
                     <span component="topic/title">{title}</span>
