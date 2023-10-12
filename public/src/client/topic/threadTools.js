@@ -86,6 +86,30 @@ define('forum/topic/threadTools', [
             return false;
         });
 
+        topicContainer.on('click', '[component="topic/mark-unresolved"]', function () {
+            socket.emit('topics.markUnresolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                $('[component="topic/unresolved"]').toggleClass('hidden', true);
+                $('[component="topic/resolved"]').toggleClass('hidden', false);
+                alerts.success('Mark As UnResolved');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-resolved"]', function () {
+            socket.emit('topics.markUnresolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                $('[component="topic/unresolved"]').toggleClass('hidden', false);
+                $('[component="topic/resolved"]').toggleClass('hidden', true);
+                alerts.success('Mark As UnResolved');
+            });
+            return false;
+        });
+
         topicContainer.on('click', '[component="topic/mark-unread-for-all"]', function () {
             const btn = $(this);
             socket.emit('topics.markAsUnreadForAll', [tid], function (err) {
