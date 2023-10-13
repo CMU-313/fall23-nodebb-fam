@@ -74,4 +74,8 @@ Before beginning any testing, please run redis-cli FLUSHALL in your terminal. Th
 
     For any posts created, there are two buttons on the right side of the hot bar, one for marking the post as resolved and the other for marking it as unresolved. Clicking them allows you to add tags to the post identifying them as solved or unresolved accordingly.
 
-.
+5. Viewing as classes instead of groups 
+
+    As we want this platform to be a class management platform/forum, most instances of "groups" in the default NodeBB front end have been changed to reflect "classes". Students can join a new "class", Instructors can "create a new class", and both roles can see classes on their nav bar.
+
+    Note that to see the changes, browser language has to be changed to en-GB (United Kingdom). This can and should be done from the Admin Control Panel to view changes on your local machine
