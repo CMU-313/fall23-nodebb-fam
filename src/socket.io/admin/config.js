@@ -1,4 +1,4 @@
-'use strict';
+./'use strict';
 
 const meta = require('../../meta');
 const plugins = require('../../plugins');

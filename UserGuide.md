@@ -73,3 +73,5 @@ Before beginning any testing, please run redis-cli FLUSHALL in your terminal. Th
 4. Resolving / Unresoving posts
 
     For any posts created, there are two buttons on the right side of the hot bar, one for marking the post as resolved and the other for marking it as unresolved. Clicking them allows you to add tags to the post identifying them as solved or unresolved accordingly.
+
+.
