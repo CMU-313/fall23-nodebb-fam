@@ -18,7 +18,7 @@
                             <i class="fa fa-question-circle"></i>
                             Unresolved
                         </span>
-                        <span component="topic/resolved" class="answered badge border text-success border-success">
+                        <span component="topic/resolved" class="answered badge border text-success border-success" hidden>
                             <i class="fa fa-check"></i>
                             Resolved
                         </span>
