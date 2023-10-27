@@ -1,4 +1,3 @@
-import eslintConfigPrettier from "eslint-config-prettier";
 const fs = require('fs');
 const path = require('path');
 
