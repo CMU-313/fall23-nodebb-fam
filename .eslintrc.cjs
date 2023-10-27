@@ -1,4 +1,4 @@
-
+import eslintConfigPrettier from "eslint-config-prettier";
 const fs = require('fs');
 const path = require('path');
 
@@ -54,15 +54,16 @@ function find_compiled_js() {
                 extends: [
                     "plugin:@typescript-eslint/recommended",
                     "plugin:@typescript-eslint/recommended-requiring-type-checking",
-                    "prettier"
+                    "plugin:prettier/recommended"
                 ],
                 parser: "@typescript-eslint/parser",
-                plugins: ["@typescript-eslint"],
+                plugins: ["@typescript-eslint", "prettier"],
                 parserOptions: {
                     ecmaFeatures: { jsx: true },
                     project: "./tsconfig.json"
                 },
                 rules: {
+                    "prettier/prettier": "error",
                     "no-use-before-define": "off",
                     "@typescript-eslint/no-use-before-define": "error",			
                 }
