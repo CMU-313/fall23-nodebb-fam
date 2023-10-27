@@ -2,6 +2,7 @@
 
 const cacheCreate = require('../cache/lru')
 
+//fixed problem
 module.exports = function (Groups) {
   Groups.cache = cacheCreate({
     name: 'group',
