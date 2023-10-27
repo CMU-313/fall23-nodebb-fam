@@ -35,9 +35,17 @@ interface UserChangePasswordData {
 }
 
 export interface UserModel {
-    updateProfile: (uid: number, data: UserUpdateData, extraFields: string[]) => Promise<unknown>;
+    updateProfile: (
+        uid: number,
+        data: UserUpdateData,
+        extraFields: string[]
+    ) => Promise<unknown>;
     hashPassword(newPassword: string): unknown;
-    isPasswordCorrect(uid: number, currentPassword: string, ip: string): unknown;
+    isPasswordCorrect(
+        uid: number,
+        currentPassword: string,
+        ip: string
+    ): unknown;
     hasPassword(uid: number): boolean;
     isAdministrator(uid: number): boolean;
     isPasswordValid(newPassword: string): unknown;
@@ -45,10 +53,17 @@ export interface UserModel {
     getUserField(uid: number, arg1: string): unknown;
     checkUsername: (data: UserUpdateData, uid: number) => Promise<void>;
     existsBySlug(userslug: string): unknown;
-    setUserFields(updateUid: number, updateData: unknown)
+    setUserFields(updateUid: number, updateData: unknown);
     getUserFields(updateUid: number, fields: string[]): unknown;
-    checkMinReputation: (callerUid: number, uid: number, setting: string) => Promise<void>;
-    changePassword: (uid: number, data: UserChangePasswordData) => Promise<void>;
+    checkMinReputation: (
+        callerUid: number,
+        uid: number,
+        setting: string
+    ) => Promise<void>;
+    changePassword: (
+        uid: number,
+        data: UserChangePasswordData
+    ) => Promise<void>;
     reset: ResetModule;
     auth: AuthModule;
     email: EmailModule;
@@ -68,7 +83,10 @@ interface AuthModule {
 // Define a type for the Email module
 interface EmailModule {
     expireValidation(uid: number): Promise<void>;
-    sendValidationEmail(uid: number, options: SendValidationEmailOptions): Promise<void>;
+    sendValidationEmail(
+        uid: number,
+        options: SendValidationEmailOptions
+    ): Promise<void>;
 }
 
 // Define a type for the options parameter of sendValidationEmail
@@ -84,9 +102,12 @@ module.exports = function (User: UserModel) {
         }
         data.username = data.username?.trim();
 
-        let userData: {username: string, userslug: string};
+        let userData: { username: string; userslug: string };
         if (uid) {
-            userData = await User.getUserFields(uid, ['username', 'userslug']) as {username: string, userslug: string};
+            userData = (await User.getUserFields(uid, [
+                'username',
+                'userslug',
+            ])) as { username: string; userslug: string };
             if (userData.username === data.username) {
                 return;
             }
@@ -115,16 +136,19 @@ module.exports = function (User: UserModel) {
             throw new Error('[[error:username-taken]]');
         }
 
-        const { error } : {error: undefined} = await plugins.hooks.fire('filter:username.check', {
-            username: data.username,
-            error: undefined,
-        }) as {error: undefined};
+        const { error }: { error: undefined } = (await plugins.hooks.fire(
+            'filter:username.check',
+            {
+                username: data.username,
+                error: undefined,
+            }
+        )) as { error: undefined };
         if (error) {
             throw error;
         }
     }
-    User.checkUsername = async (username: UserUpdateData, uid: number) => isUsernameAvailable(username, uid);
-
+    User.checkUsername = async (username: UserUpdateData, uid: number) =>
+        isUsernameAvailable(username, uid);
 
     async function isWebsiteValid(callerUid: number, data: UserUpdateData) {
         if (!data.website) {
@@ -142,16 +166,23 @@ module.exports = function (User: UserModel) {
         }
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        if (data.aboutme !== undefined && data.aboutme.length > meta.config.maximumAboutMeLength) {
+        if (
+            data.aboutme !== undefined &&
+            data.aboutme.length > meta.config.maximumAboutMeLength
+        ) {
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            throw new Error(`[[error:about-me-too-long, ${String(meta.config.maximumAboutMeLength)}]]`);
+            throw new Error(
+                `[[error:about-me-too-long, ${String(
+                    meta.config.maximumAboutMeLength
+                )}]]`
+            );
         }
 
         await User.checkMinReputation(callerUid, data.uid, 'min:rep:aboutme');
     }
 
-    async function isSignatureValid(callerUid: number, data : UserUpdateData) {
+    async function isSignatureValid(callerUid: number, data: UserUpdateData) {
         if (!data.signature) {
             return;
         }
@@ -161,19 +192,29 @@ module.exports = function (User: UserModel) {
         if (signature.length > meta.config.maximumSignatureLength) {
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            throw new Error(`[[error:signature-too-long, ${String(meta.config.maximumSignatureLength)}]]`);
+            throw new Error(
+                `[[error:signature-too-long, ${String(
+                    meta.config.maximumSignatureLength
+                )}]]`
+            );
         }
         await User.checkMinReputation(callerUid, data.uid, 'min:rep:signature');
     }
 
-    function isFullnameValid(data : UserUpdateData) {
-        if (data.fullname && (validator.isURL(data.fullname) || data.fullname.length > 255)) {
+    function isFullnameValid(data: UserUpdateData) {
+        if (
+            data.fullname &&
+            (validator.isURL(data.fullname) || data.fullname.length > 255)
+        ) {
             throw new Error('[[error:invalid-fullname]]');
         }
     }
 
-    function isLocationValid(data : UserUpdateData) {
-        if (data.location && (validator.isURL(data.location) || data.location.length > 255)) {
+    function isLocationValid(data: UserUpdateData) {
+        if (
+            data.location &&
+            (validator.isURL(data.location) || data.location.length > 255)
+        ) {
             throw new Error('[[error:invalid-location]]');
         }
     }
@@ -191,20 +232,23 @@ module.exports = function (User: UserModel) {
 
     function isGroupTitleValid(data: UserUpdateData) {
         function checkTitle(title: string) {
-            if (title === 'registered-users' || groups.isPrivilegeGroup(title)) {
+            if (
+                title === 'registered-users' ||
+                groups.isPrivilegeGroup(title)
+            ) {
                 throw new Error('[[error:invalid-group-title]]');
             }
         }
         if (!data.groupTitle) {
             return;
         }
-        let groupTitles : string[] = [];
+        let groupTitles: string[] = [];
         if (validator.isJSON(data.groupTitle)) {
             groupTitles = JSON.parse(data.groupTitle) as string[];
             if (!Array.isArray(groupTitles)) {
                 throw new Error('[[error:invalid-group-title]]');
             }
-            groupTitles.forEach(title => checkTitle(title));
+            groupTitles.forEach((title) => checkTitle(title));
         } else {
             groupTitles = [data.groupTitle];
             checkTitle(data.groupTitle);
@@ -239,7 +283,11 @@ module.exports = function (User: UserModel) {
         isGroupTitleValid(data);
     }
 
-    User.checkMinReputation = async function (callerUid: number, uid: number, setting) {
+    User.checkMinReputation = async function (
+        callerUid: number,
+        uid: number,
+        setting
+    ) {
         const roundedNumber1: number = Math.round(uid * 10) / 10;
         const roundedNumber2: number = Math.round(callerUid * 10) / 10;
         const isSelf = roundedNumber1 === roundedNumber2;
@@ -254,7 +302,12 @@ module.exports = function (User: UserModel) {
         if (reputation < meta.config[setting]) {
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            throw new Error(`[[error:not-enough-reputation-${setting.replace(/:/g, '-')}, ${String(meta.config[setting])}]]`);
+            throw new Error(
+                `[[error:not-enough-reputation-${setting.replace(
+                    /:/g,
+                    '-'
+                )}, ${String(meta.config[setting])}]]`
+            );
         }
     };
 
@@ -269,16 +322,29 @@ module.exports = function (User: UserModel) {
         if (newEmail) {
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            await User.email.sendValidationEmail(uid, {
-                email: newEmail,
-                force: 1,
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            }).catch(err => winston.error(`[user.create] Validation email failed to send\n[emailer.send] ${String(err.stack)}`));
+            await User.email
+                .sendValidationEmail(uid, {
+                    email: newEmail,
+                    force: 1,
+                    // The next line calls a function in a module that has not been updated to TS yet
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                })
+                .catch((err) =>
+                    winston.error(
+                        `[user.create] Validation email failed to send\n[emailer.send] ${String(
+                            err.stack
+                        )}`
+                    )
+                );
         }
     }
 
-    async function updateUidMapping(field: string, uid: number, value: string, oldValue: string) {
+    async function updateUidMapping(
+        field: string,
+        uid: number,
+        value: string,
+        oldValue: string
+    ) {
         if (value === oldValue) {
             return;
         }
@@ -297,52 +363,87 @@ module.exports = function (User: UserModel) {
         if (!newUsername) {
             return;
         }
-        const userData = (await User.getUserFields(uid, ['username', 'userslug'])) as { username: string; userslug: string } || { username: '', userslug: '' };
+        const userData = ((await User.getUserFields(uid, [
+            'username',
+            'userslug',
+        ])) as { username: string; userslug: string }) || {
+            username: '',
+            userslug: '',
+        };
 
         if (userData.username === newUsername) {
             return;
         }
 
-        const newUserslug : string = slugify(newUsername) as string;
+        const newUserslug: string = slugify(newUsername) as string;
         const now = Date.now();
         await Promise.all([
             updateUidMapping('username', uid, newUsername, userData.username),
             updateUidMapping('userslug', uid, newUserslug, userData.userslug),
             // The next line calls a function in a module that has not been updated to TS yet
             // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-            db.sortedSetAdd(`user:${uid}:usernames`, now, `${newUsername}:${now}`),
+            db.sortedSetAdd(
+                `user:${uid}:usernames`,
+                now,
+                `${newUsername}:${now}`
+            ),
         ]);
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        await db.sortedSetRemove('username:sorted', `${userData.username.toLowerCase()}:${uid}`);
+        await db.sortedSetRemove(
+            'username:sorted',
+            `${userData.username.toLowerCase()}:${uid}`
+        );
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        await db.sortedSetAdd('username:sorted', 0, `${newUsername.toLowerCase()}:${uid}`);
+        await db.sortedSetAdd(
+            'username:sorted',
+            0,
+            `${newUsername.toLowerCase()}:${uid}`
+        );
     }
 
     async function updateFullname(uid: number, newFullname: string) {
         // The next line calls a function in a module that has not been updated to TS yet
         // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-        const fullname = await User.getUserField(uid, 'fullname') as string;
+        const fullname = (await User.getUserField(uid, 'fullname')) as string;
         await updateUidMapping('fullname', uid, newFullname, fullname);
         if (newFullname !== fullname) {
             if (fullname) {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                await db.sortedSetRemove('fullname:sorted', `${fullname.toLowerCase()}:${uid}`);
+                // The next line calls a function in a module that has not been updated to TS yet
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                await db.sortedSetRemove(
+                    'fullname:sorted',
+                    `${fullname.toLowerCase()}:${uid}`
+                );
             }
             if (newFullname) {
-            // The next line calls a function in a module that has not been updated to TS yet
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
-                await db.sortedSetAdd('fullname:sorted', 0, `${newFullname.toLowerCase()}:${uid}`);
+                // The next line calls a function in a module that has not been updated to TS yet
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+                await db.sortedSetAdd(
+                    'fullname:sorted',
+                    0,
+                    `${newFullname.toLowerCase()}:${uid}`
+                );
             }
         }
     }
 
-    User.updateProfile = async function (uid: number, data: UserUpdateData, extraFields) {
+    User.updateProfile = async function (
+        uid: number,
+        data: UserUpdateData,
+        extraFields
+    ) {
         let fields: string[] = [
-            'username', 'email', 'fullname', 'website', 'location',
-            'groupTitle', 'birthday', 'signature', 'aboutme',
+            'username',
+            'email',
+            'fullname',
+            'website',
+            'location',
+            'groupTitle',
+            'birthday',
+            'signature',
+            'aboutme',
         ] as string[];
         if (Array.isArray(extraFields)) {
             fields = _.uniq(fields.concat(extraFields));
@@ -351,30 +452,38 @@ module.exports = function (User: UserModel) {
             throw new Error('[[error:invalid-update-uid]]');
         }
         const updateUid = data.uid;
-        const result: {uid: number, data: UserUpdateData, fields: string[]} = await plugins.hooks.fire('filter:user.updateProfile', {
-            uid: uid,
-            data: data,
-            fields: fields,
-        }) as {uid: number, data: UserUpdateData, fields: string[]};
+        const result: { uid: number; data: UserUpdateData; fields: string[] } =
+            (await plugins.hooks.fire('filter:user.updateProfile', {
+                uid: uid,
+                data: data,
+                fields: fields,
+            })) as { uid: number; data: UserUpdateData; fields: string[] };
         fields = result.fields;
         data = result.data;
         await validateData(uid, data);
         const oldData = await User.getUserFields(updateUid, fields);
         const updateData = {};
-        await Promise.all(fields.map(async (field) => {
-            if (!(data[field] !== undefined && typeof data[field] === 'string')) {
-                return;
-            }
-            data[field] = (data[field] as string).trim();
-            if (field === 'email') {
-                return await updateEmail(updateUid, data.email);
-            } else if (field === 'username') {
-                return await updateUsername(updateUid, data.username);
-            } else if (field === 'fullname') {
-                return await updateFullname(updateUid, data.fullname);
-            }
-            updateData[field] = data[field] as UserUpdateData;
-        }));
+        await Promise.all(
+            fields.map(async (field) => {
+                if (
+                    !(
+                        data[field] !== undefined &&
+                        typeof data[field] === 'string'
+                    )
+                ) {
+                    return;
+                }
+                data[field] = (data[field] as string).trim();
+                if (field === 'email') {
+                    return await updateEmail(updateUid, data.email);
+                } else if (field === 'username') {
+                    return await updateUsername(updateUid, data.username);
+                } else if (field === 'fullname') {
+                    return await updateFullname(updateUid, data.fullname);
+                }
+                updateData[field] = data[field] as UserUpdateData;
+            })
+        );
         if (Object.keys(updateData).length) {
             await User.setUserFields(updateUid, updateData);
         }
@@ -389,12 +498,19 @@ module.exports = function (User: UserModel) {
             await hookResult;
         }
         return await User.getUserFields(updateUid, [
-            'email', 'username', 'userslug',
-            'picture', 'icon:text', 'icon:bgColor',
+            'email',
+            'username',
+            'userslug',
+            'picture',
+            'icon:text',
+            'icon:bgColor',
         ]);
     };
 
-    User.changePassword = async function (uid: number, data: UserChangePasswordData) {
+    User.changePassword = async function (
+        uid: number,
+        data: UserChangePasswordData
+    ) {
         try {
             if (uid <= 0 || !data || !data.uid) {
                 throw new Error('[[error:invalid-uid]]');
@@ -417,9 +533,15 @@ module.exports = function (User: UserModel) {
                 throw new Error('[[user:change_password_error_privileges]]');
             }
             if (isSelf && hasPassword) {
-                const correct = await User.isPasswordCorrect(data.uid, data.currentPassword, data.ip);
+                const correct = await User.isPasswordCorrect(
+                    data.uid,
+                    data.currentPassword,
+                    data.ip
+                );
                 if (!correct) {
-                    throw new Error('[[user:change_password_error_wrong_current]]');
+                    throw new Error(
+                        '[[user:change_password_error_wrong_current]]'
+                    );
                 }
             }
             const hashedPassword = await User.hashPassword(data.newPassword);
@@ -449,7 +571,10 @@ module.exports = function (User: UserModel) {
                 User.email.expireValidation(data.uid),
             ]);
             // Handle plugins.hooks.fire separately if it's not a promise
-            const hookResult = plugins.hooks.fire('action:password.change', { uid: uid, targetUid: data.uid });
+            const hookResult = plugins.hooks.fire('action:password.change', {
+                uid: uid,
+                targetUid: data.uid,
+            });
             // Check if it's a promise and wait for it if needed
             if (hookResult instanceof Promise) {
                 await hookResult;

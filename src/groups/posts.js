@@ -18,32 +18,51 @@ module.exports = function (Groups) {
             return;
         }
 
-        let groupNames = await Groups.getUserGroupMembership('groups:visible:createtime', [postData.uid]);
+        let groupNames = await Groups.getUserGroupMembership(
+            'groups:visible:createtime',
+            [postData.uid]
+        );
         groupNames = groupNames[0];
 
         // Only process those groups that have the cid in its memberPostCids setting (or no setting at all)
-        const groupData = await groups.getGroupsFields(groupNames, ['memberPostCids']);
-        groupNames = groupNames.filter((groupName, idx) => (
-            !groupData[idx].memberPostCidsArray.length ||
-            groupData[idx].memberPostCidsArray.includes(postData.cid)
-        ));
+        const groupData = await groups.getGroupsFields(groupNames, [
+            'memberPostCids',
+        ]);
+        groupNames = groupNames.filter(
+            (groupName, idx) =>
+                !groupData[idx].memberPostCidsArray.length ||
+                groupData[idx].memberPostCidsArray.includes(postData.cid)
+        );
 
-        const keys = groupNames.map(groupName => `group:${groupName}:member:pids`);
+        const keys = groupNames.map(
+            (groupName) => `group:${groupName}:member:pids`
+        );
         await db.sortedSetsAdd(keys, postData.timestamp, postData.pid);
-        await Promise.all(groupNames.map(name => truncateMemberPosts(name)));
+        await Promise.all(groupNames.map((name) => truncateMemberPosts(name)));
     };
 
     // Type signature: (groupName: string) => Promise<void>
     async function truncateMemberPosts(groupName) {
         assert(typeof groupName === 'string', 'groupName must be a string');
 
-        let lastPid = await db.getSortedSetRevRange(`group:${groupName}:member:pids`, 10, 10);
+        let lastPid = await db.getSortedSetRevRange(
+            `group:${groupName}:member:pids`,
+            10,
+            10
+        );
         lastPid = lastPid[0];
         if (!parseInt(lastPid, 10)) {
             return;
         }
-        const score = await db.sortedSetScore(`group:${groupName}:member:pids`, lastPid);
-        await db.sortedSetsRemoveRangeByScore([`group:${groupName}:member:pids`], '-inf', score);
+        const score = await db.sortedSetScore(
+            `group:${groupName}:member:pids`,
+            lastPid
+        );
+        await db.sortedSetsRemoveRangeByScore(
+            [`group:${groupName}:member:pids`],
+            '-inf',
+            score
+        );
     }
 
     // Type signature: (groupName: string, max: number, uid: number) => Promise<object[]>
@@ -52,25 +71,36 @@ module.exports = function (Groups) {
         assert(typeof max === 'number', 'max must be a number');
         assert(typeof uid === 'number', 'uid must be a number');
 
-        let pids = await db.getSortedSetRevRange(`group:${groupName}:member:pids`, 0, max - 1);
+        let pids = await db.getSortedSetRevRange(
+            `group:${groupName}:member:pids`,
+            0,
+            max - 1
+        );
         pids = await privileges.posts.filter('topics:read', pids, uid);
         const groupNames = await getGroupNames();
-        const filteredPids = await filterPostsByTitle(pids, groupName, groupNames);
-        return await posts.getPostSummaryByPids(filteredPids, uid, { stripTags: false });
+        const filteredPids = await filterPostsByTitle(
+            pids,
+            groupName,
+            groupNames
+        );
+        return await posts.getPostSummaryByPids(filteredPids, uid, {
+            stripTags: false,
+        });
     };
 
     // Type signature: (pids: number[], groupName: string, groupNameData: string[]) => Promise<number[]>
     async function filterPostsByTitle(pids, groupName, groupNameData) {
         assert(Array.isArray(pids), 'pids must be an array of numbers');
         assert(typeof groupName === 'string', 'groupName must be a string');
-        assert(Array.isArray(groupNameData), 'groupNameData must be an array of strings');
+        assert(
+            Array.isArray(groupNameData),
+            'groupNameData must be an array of strings'
+        );
 
         const postsData = await posts.getPostsFields(pids, ['tid']);
         const filteredPids = [];
-        const tids = _.uniq(postsData.map(post => post.tid));
-        const [topics] = await Promise.all([
-            getTopics(tids),
-        ]);
+        const tids = _.uniq(postsData.map((post) => post.tid));
+        const [topics] = await Promise.all([getTopics(tids)]);
 
         const groupNames = groupNameData.map((entry) => {
             const parts = entry.split(':');
@@ -109,7 +139,7 @@ module.exports = function (Groups) {
         const topicsData = await topics.getTopicsData(tids);
         topicsData.forEach((topic) => {
             if (topic && topic.tags) {
-                topic.tags = topic.tags.map(tag => tag.value);
+                topic.tags = topic.tags.map((tag) => tag.value);
             }
         });
 
@@ -119,16 +149,29 @@ module.exports = function (Groups) {
     // Type signature: () => Promise<string[]>
     async function getGroupNames() {
         return new Promise((resolve, reject) => {
-            Groups.getGroups('groups:visible:name', 0, -1, (err, groupNames) => {
-                if (err) {
-                    reject(err);
-                } else {
-                    // Ensure that groupNames is an array of strings
-                    assert(Array.isArray(groupNames), 'groupNames must be an array');
-                    assert(groupNames.every(name => typeof name === 'string'), 'Each group name must be a string');
-                    resolve(groupNames);
+            Groups.getGroups(
+                'groups:visible:name',
+                0,
+                -1,
+                (err, groupNames) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        // Ensure that groupNames is an array of strings
+                        assert(
+                            Array.isArray(groupNames),
+                            'groupNames must be an array'
+                        );
+                        assert(
+                            groupNames.every(
+                                (name) => typeof name === 'string'
+                            ),
+                            'Each group name must be a string'
+                        );
+                        resolve(groupNames);
+                    }
                 }
-            });
+            );
         });
     }
 };
