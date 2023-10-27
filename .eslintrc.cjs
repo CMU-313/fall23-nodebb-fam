@@ -1,3 +1,4 @@
+
 const fs = require('fs');
 const path = require('path');
 
@@ -41,28 +42,25 @@ function find_compiled_js() {
     }
     
     module.exports = {
-        extends: ["nodebb"],
+        extends: ["nodebb","prettier"],
         root: true,
         ignorePatterns: find_compiled_js(),
         rules: {
-            "indent": ["error", 4]
         },
         overrides: [
             {
                 files: ["**/*.ts", "**/*.tsx"],
                 extends: [
                     "plugin:@typescript-eslint/recommended",
-                    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-                    "plugin:prettier/recommended"
+                    "plugin:@typescript-eslint/recommended-requiring-type-checking"
                 ],
                 parser: "@typescript-eslint/parser",
-                plugins: ["@typescript-eslint", "prettier"],
+                plugins: ["@typescript-eslint"],
                 parserOptions: {
                     ecmaFeatures: { jsx: true },
                     project: "./tsconfig.json"
                 },
                 rules: {
-                    "prettier/prettier": "error",
                     "no-use-before-define": "off",
                     "@typescript-eslint/no-use-before-define": "error",			
                 }
