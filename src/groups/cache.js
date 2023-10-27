@@ -7,7 +7,7 @@ module.exports = function (Groups) {
         name: "group",
         max: 40000,
         ttl: 0,
-    });
+    })
     Groups.clearCache = function (uid, groupNames) {
         if (!Array.isArray(groupNames)) {
             groupNames = [groupNames];
