@@ -18,6 +18,18 @@ export type TopicObjectCoreProperties = {
     bookmark: number;
     unreplied: boolean;
     icons: string[];
+  lastposttime: number;
+  category: CategoryObject;
+  user: UserObjectSlim;
+  teaser: Teaser;
+  tags: TagObject[];
+  isOwner: boolean;
+  ignored: boolean;
+  unread: boolean;
+  bookmark: number;
+  unreplied: boolean;
+  icons: string[];
+  unresolved: boolean;
 };
 
 export type TopicObjectOptionalProperties = {

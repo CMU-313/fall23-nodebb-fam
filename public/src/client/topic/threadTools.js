@@ -122,6 +122,60 @@ define('forum/topic/threadTools', [
                 return false;
             }
         );
+        topicContainer.on('click', '[component="topic/mark-unread"]', function () {
+            socket.emit('topics.markUnread', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+
+                if (app.previousUrl && !app.previousUrl.match('^/topic')) {
+                    ajaxify.go(app.previousUrl, function () {
+                        handleBack.onBackClicked(true);
+                    });
+                } else if (ajaxify.data.category) {
+                    ajaxify.go('category/' + ajaxify.data.category.slug, handleBack.onBackClicked);
+                }
+
+                alerts.success('[[topic:mark_unread.success]]');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-unresolved"]', function () {
+            socket.emit('topics.markAsResolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                $('[component="topic/unresolved"]').toggleClass('hidden', false);
+                $('[component="topic/resolved"]').toggleClass('hidden', true);
+                alerts.success('Mark As Unresolved');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-resolved"]', function () {
+            socket.emit('topics.markUnresolved', tid, function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                $('[component="topic/unresolved"]').toggleClass('hidden', true);
+                $('[component="topic/resolved"]').toggleClass('hidden', false);
+                alerts.success('Mark As Resolved');
+            });
+            return false;
+        });
+
+        topicContainer.on('click', '[component="topic/mark-unread-for-all"]', function () {
+            const btn = $(this);
+            socket.emit('topics.markAsUnreadForAll', [tid], function (err) {
+                if (err) {
+                    return alerts.error(err);
+                }
+                alerts.success('[[topic:markAsUnreadForAll.success]]');
+                btn.parents('.thread-tools.open').find('.dropdown-toggle').trigger('click');
+            });
+            return false;
+        });
 
         topicContainer.on('click', '[component="topic/move"]', function () {
             require(['forum/topic/move'], function (move) {
