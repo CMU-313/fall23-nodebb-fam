@@ -28,7 +28,7 @@ fi
 # Read the JSON file
 json_data=$(cat "/usr/src/app/config_template.json")
 
-# Update the JSON file with the environment variables
+# Update the JSON file with the environment variables necessary
 json_data=$(jq --arg deployment_url "$DEPLOYMENT_URL" '.url = $deployment_url' <<< "$json_data")
 json_data=$(jq --arg host "$REDIS_HOST" '.redis.host = $host' <<< "$json_data")
 json_data=$(jq --arg port "$REDIS_PORT" '.redis.port = $port' <<< "$json_data")
