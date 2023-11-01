@@ -118,7 +118,9 @@ SocketPosts.reject = async function (socket, data) {
     if (result && socket.uid !== parseInt(result.uid, 10)) {
         await sendQueueNotification('post-queue-rejected', result.uid, '/');
     }
-    await logQueueEvent(socket, result, 'reject');
+    if (result != null){
+        await logQueueEvent(socket, result, 'reject');
+    }
 };
 
 async function logQueueEvent(socket, result, type) {
