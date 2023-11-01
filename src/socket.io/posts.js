@@ -107,10 +107,12 @@ SocketPosts.accept = async function (socket, data) {
     if (socket != null) {
         await canEditQueue(socket, data, 'accept');
         const result = await posts.submitFromQueue(data.id);
-        if (result && socket.uid !== parseInt(result.uid, 10)) {
-            await sendQueueNotification('post-queue-accepted', result.uid, `/post/${result.pid}`);
+        if (result != null){
+            if (result && socket.uid !== parseInt(result.uid, 10)) {
+                await sendQueueNotification('post-queue-accepted', result.uid, `/post/${result.pid}`);
+            }
+            await logQueueEvent(socket, result, 'accept');
         }
-        await logQueueEvent(socket, result, 'accept');
     }
 };
 
