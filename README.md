@@ -62,7 +62,7 @@ If you want to directly run the linting and testing commands with specific confi
 
 DeepScan is an advanced static code analysis tool that helps us maintain high code quality and catch potential issues in our JavaScript/TypeScript codebase.
 
-[![DeepScan Grade](https://deepscan.io/api/teams/22447/projects/25768/branches/811038/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=22447&pid=25768&bid=811038)
+[![DeepScan Grade](https://deepscan.io/api/teams/22447/projects/25816/branches/813084/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=22447&pid=25816&bid=813084)
 
 We've integrated DeepScan into our GitHub workflow. Every push to this repository's main branch triggers an analysis.
 
