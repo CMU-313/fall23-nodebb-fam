@@ -210,7 +210,7 @@ describe('Topic\'s', () => {
             });
 
             assert.strictEqual(result.body.status.code, 'ok');
-            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
             assert.ok(regexPattern.test(result.body.response.title), `Topic title "${result.body.response.title}" does not match the expected pattern`);
             assert.strictEqual(result.body.response.user.username, '[[global:guest]]');
 
@@ -246,7 +246,7 @@ describe('Topic\'s', () => {
             });
 
             assert.strictEqual(result.body.status.code, 'ok');
-            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            const regexPattern = /^just a title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
             assert.ok(regexPattern.test(result.body.response.title), `Topic title "${result.body.response.title}" does not match the expected pattern`);
             assert.strictEqual(result.body.response.user.username, 'guest123');
             assert.strictEqual(result.body.response.user.displayname, 'guest123');
@@ -421,7 +421,7 @@ describe('Topic\'s', () => {
         it('should get topic title by pid', (done) => {
             topics.getTitleByPid(newPost.pid, (err, title) => {
                 assert.ifError(err);
-                const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+                const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
                 assert.ok(regexPattern.test(title), `Topic title "${title}" does not match the expected pattern`);
                 done();
             });
