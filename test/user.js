@@ -1482,7 +1482,7 @@ describe('User', () => {
 
             const result = await Topics.post({ title: 'banned topic', content: 'tttttttttttt', cid: cid, uid: testUid });
             assert(result);
-            const regexPattern = /^banned topic \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            const regexPattern = /^banned topic \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
             assert.ok(regexPattern.test(result.topicData.title), `Topic title "${result.topicData.title}" does not match the expected pattern`);
         });
     });
