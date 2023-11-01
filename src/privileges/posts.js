@@ -86,7 +86,7 @@ privsPosts.filter = async function (privilege, pids, uid) {
             }
             return tidToTopic[post.tid] && tidToTopic[post.tid].cid;
         }
-        return null
+        return null;
     }).filter(cid => parseInt(cid, 10));
 
     cids = _.uniq(cids);
