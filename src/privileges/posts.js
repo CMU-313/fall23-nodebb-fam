@@ -79,13 +79,11 @@ privsPosts.filter = async function (privilege, pids, uid) {
     const tidToTopic = _.zipObject(tids, topicData);
 
     let cids = postData.map((post, index) => {
-        if (post != null){
-            if (post) {
-                post.pid = pids[index];
-                post.topic = tidToTopic[post.tid];
-            }
-            return tidToTopic[post.tid] && tidToTopic[post.tid].cid;
+        if (post) {
+            post.pid = pids[index];
+            post.topic = tidToTopic[post.tid];
         }
+        return tidToTopic[post.tid] && tidToTopic[post.tid].cid;
     }).filter(cid => parseInt(cid, 10));
 
     cids = _.uniq(cids);
