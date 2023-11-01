@@ -92,8 +92,8 @@ describe('Categories', () => {
         request(`${nconf.get('url')}/api/category/${categoryObj.cid}/test-category`, { json: true }, (err, response, body) => {
             assert.ifError(err);
             assert.equal(response.statusCode, 200);
-            assert.equal(body.name, 'Test Category &amp; NodeBB');
             assert(body);
+            assert.equal(body.name, 'Test Category &amp; NodeBB');
             done();
         });
     });
@@ -268,7 +268,7 @@ describe('Categories', () => {
                 after: 0,
             });
             // Define a regex pattern for Test Topic Title
-            const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|0[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
+            const regexPattern = /^Test Topic Title \((1[0-2]|0[1-9])&#x2F;(3[01]|[12][0-9]|[1-9])&#x2F;\d{4}, (1[0-2]|[1-9]):([0-5][0-9]):([0-5][0-9]) (AM|PM)\)$/;
             // Ensure the first element is the deleted topic marker
             assert.strictEqual(data.topics.map(t => t.title)[0], '[[topic:topic_is_deleted]]', 'First topic should be deleted');
             // Check each topic title against the regex pattern, skipping the first element
