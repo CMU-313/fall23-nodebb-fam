@@ -92,8 +92,8 @@ describe('Categories', () => {
         request(`${nconf.get('url')}/api/category/${categoryObj.cid}/test-category`, { json: true }, (err, response, body) => {
             assert.ifError(err);
             assert.equal(response.statusCode, 200);
-            assert.equal(body.name, 'Test Category &amp; NodeBB');
             assert(body);
+            assert.equal(body.name, 'Test Category &amp; NodeBB');
             done();
         });
     });
