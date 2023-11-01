@@ -56,6 +56,8 @@ Our tests ensure that a timestamp shows up in any post made by editing existing 
 
 # Using our Features:
 
+For someone accessing a deployed version of this app, it looks like you will not be able to use several of our features that require an admin account unless we find a fix for this (creating groups, joining Miscellaneous group, testing the filters, etc.). You should be able to view the timestamp feature, the default miscellaneous group feature, resolved/unresolved post feature, clicking on the classes category to be redirected feature, and post breakdowns within categories feature.
+
 Before beginning any testing, please run redis-cli FLUSHALL in your terminal. Then, setup the codebase again with ./nodebb setup (make sure to store the admin password shown at the end) and start the NodeBB server.
 
 1. Viewing a default Miscellaneous Group
