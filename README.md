@@ -58,20 +58,6 @@ After running the test suite, you can find the coverage report generated in the 
 
 If you want to directly run the linting and testing commands with specific configurations (i.e. only running the test suite on specific files, using `--fix` with ESLint), you can find the underlying commands are in the `package.json` file.
 
-## DeepScan Code Analysis
-
-DeepScan is an advanced static code analysis tool that helps us maintain high code quality and catch potential issues in our JavaScript/TypeScript codebase.
-
-[![DeepScan Grade](https://deepscan.io/api/teams/22447/projects/25816/branches/813084/badge/grade.svg)](https://deepscan.io/dashboard#view=project&tid=22447&pid=25816&bid=813084)
-
-We've integrated DeepScan into our GitHub workflow. Every push to this repository's main branch triggers an analysis.
-
-You can view the DeepScan analysis results by clicking on the DeepScan Grade badge above.
-
-Issues and suggestions found by DeepScan will be highlighted, and you can address them directly from the DeepScan dashboard.
-
-We believe in maintaining a high standard of code quality, and DeepScan is an essential tool in achieving that goal.
-
 ## License
 
 NodeBB is licensed under the **GNU General Public License v3 (GPL-3)** (http://www.gnu.org/copyleft/gpl.html).
